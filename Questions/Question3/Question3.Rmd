@@ -59,8 +59,6 @@ Funds <- bind_rows(Active_Manager_Peers, ABC_Fund) %>%
 
 ## Overview
 
-
-
 ```{r Q3_Roll_Beta, cache = TRUE}
 # Rolling 36 month regression of each fund on the Capped SWIX (months with benchmark data only)
 Manager_list <- Funds %>% filter(YM %in% BM_Monthly$YM) %>% group_split(Name)
@@ -76,9 +74,115 @@ Rolling_Beta <- Manager_list %>%
 Q3_Beta_Boxplot(Rolling_Beta, Months_back = 60, Fund = "ABC_Fund")
 ```
 
+## Explanation
+
 - Most active managers have a high market sensitivity, which means that their returns are mostly similar to that of the market.
 - ABC Fund has a lower market sensitivity than most of its peers. Therefore, a larger part of its returns comes from its own investment decisions.
 
+```{r Q3_Factor_Data}
+# Market and style index returns in columns
+Factors <- Idx_Monthly %>%
+  filter(Tickers %in% c("J433", "STXVALJ433", "STXMOMJ433", "STXLVLJ433", "J202")) %>%
+  spread(Tickers, Ret) %>%
+  select(YM, Market = J433, Value = STXVALJ433, Momentum = STXMOMJ433, Low_Vol = STXLVLJ433, Small_Caps = J202)
 
+# ABC Fund returns joined to the factor returns
+ABC_df <- Funds %>%
+  #Chooses one fund (ABC)
+  filter(Name == "ABC_Fund") %>%
+  select(YM, Returns) %>%
+    # Month end dates differ (join by YM)
+  left_join(Factors, by = "YM") %>%
+  drop_na()
 
+# Average peer return each month joined to the factor returns
+Peer_df <- Funds %>%
+  filter(Name != "ABC_Fund") %>%
+  group_by(YM) %>%
+    # Average return across all peers in each month
+  summarise(Returns = mean(Returns, na.rm = T)) %>%
+  left_join(Factors, by = "YM") %>%
+  drop_na()
+```
 
+```{r Q3_Factor_Reg}
+# Returns regressed on the market and style returns
+# lm used directly as tidyfit::regress returned an error (slice_id not found)
+lm_ABC  <- lm(Returns ~ Market + Value + Momentum + Low_Vol + Small_Caps, data = ABC_df)
+lm_Peer <- lm(Returns ~ Market + Value + Momentum + Low_Vol + Small_Caps, data = Peer_df)
+
+# Exposures of both in one table (intercept removed)
+Loadings <-
+  bind_rows(lm_ABC %>% broom::tidy() %>% mutate(Name = "ABC Fund"),
+    lm_Peer %>% broom::tidy() %>% mutate(Name = "Average peer")) %>%
+    # Intercept removed so that only the factor exposures are shown
+  filter(term != "(Intercept)")
+```
+
+## What drives ABC Fund's returns?
+
+```{r Q3_Factor_Plot}
+g_fac <- Loadings %>%
+  ggplot() +
+  geom_bar(aes(term, estimate, fill = Name), stat = "identity", position = "dodge") +
+  geom_hline(yintercept = 0) +
+  labs(title = "What drives the returns of ABC Fund compared to the average peer",
+       subtitle = "Above zero: returns move with that part of the market. Below zero: returns move against it",
+       x = "", y = "Exposure") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+g_fac
+```
+
+## Explanation
+
+- The average peer's returns move mostly with the overall market.
+- ABC Fund's returns depend less on the overall market and lean more towards value stocks.
+- Therefore, ABC Fund offers clients a different source of returns to most of the industry.
+
+```{r Q3_Share_Data}
+# Rolling 3 year annualised return of every fund
+Roll_Funds <- Funds %>%
+  arrange(date) %>%
+  group_by(Name) %>%
+  mutate(RollRet = RcppRoll::roll_prod(1+Returns, n = 36, fill = NA, align = "right")^(12/36) - 1) %>%
+  ungroup() %>%
+  filter(!is.na(RollRet))
+
+# ABC Fund's rolling return in its own column
+ABC_Roll <- Roll_Funds %>% filter(Name == "ABC_Fund") %>% select(YM, ABC = RollRet)
+
+# Share of peers with a lower rolling return than ABC Fund each month
+df_comp <- Roll_Funds %>%
+  filter(Name != "ABC_Fund") %>%
+  left_join(ABC_Roll, by = "YM") %>%
+  filter(!is.na(ABC)) %>%
+  mutate(XS = ABC - RollRet) %>%
+  group_by(date) %>%
+  summarise(Proportion = sum(XS>0)/n())
+```
+
+## ABC Fund against its peers over time
+
+```{r Q3_Share_Plot}
+g_share <- df_comp %>%
+  ggplot() +
+  # Green when ABC Fund beat more than half of its peers, red when it beat fewer
+  geom_ribbon(aes(date, ymin = 0.5, ymax = ifelse(Proportion > 0.5, Proportion, 0.5)), fill = "darkgreen", alpha = 0.4) +
+  geom_ribbon(aes(date, ymin = ifelse(Proportion < 0.5, Proportion, 0.5), ymax = 0.5), fill = "darkred", alpha = 0.4) +
+  geom_line(aes(date, Proportion), colour = "grey30", size = 1) +
+  # Half of peers beaten
+  geom_hline(yintercept = 0.5) +
+  labs(title = "ABC Fund has outperformed most of its peers for most of the last decade",
+       subtitle = "Share of peers with a lower rolling 3 year return than ABC Fund",
+       caption = "Green: ABC Fund beat more than half of its peers. Red: ABC Fund beat fewer than half.",
+       x = "", y = "Share of peers beaten") +
+  fmxdat::theme_fmx()
+
+finplot(g_share, x.date.dist = "1 year", x.date.type = "%Y", x.vert = T, y.pct = T, y.pct_acc = 1)
+```
+
+## Explanation
+
+- ABC Fund had a higher rolling 3 year return than most of its peers in almost every period since 2015.
+- Its performance has been weaker recently, which can be expected for a fund that is quite different from its peers.
