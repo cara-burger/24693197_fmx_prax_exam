@@ -1,0 +1,6 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+# Ignore every folder named data, at any depth (root and Questions/*/data):
+data/
