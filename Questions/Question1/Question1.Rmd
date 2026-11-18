@@ -172,7 +172,7 @@ Eq_Rets <- bind_rows(Local_Rets, Global_Rets)
 The first measure is a rolling standard deviation. For each day, the standard deviation is calculated over the previous 63 trading days and the window then moves forward one day at a time. A 63 day window (roughly three months) was chosen as it reacts to changes in the market without being too noisy. It also matches the three month horizon of the SAVIUSD currency volatility index.
 
 ```{r Figure_RollVol, fig.align = 'center', fig.cap = "Rolling 3 month annualised volatility: local vs global equity \\label{Figure_RollVol}", fig.height = 5, fig.width = 7, fig.ext = 'png'}
-Roll_Vol <- Eq_Rets %>% Q1_Rolling_Vol(Window = 63)
+Roll_Vol <- Eq_Rets %>% Rolling_Vol(Window = 63)
 
 g_roll <- Roll_Vol %>%
   mutate(Region = ifelse(Tickers %in% c("J433", "J201", "J202"), "Local", "Global")) %>%
@@ -181,7 +181,7 @@ g_roll <- Roll_Vol %>%
   facet_wrap(~Region, ncol = 1) +
   labs(title = "Rolling Volatility: Local vs Global Equity",
      subtitle = "63 day rolling standard deviation, annualised",
-     x = "Year", y = "Annualised SD") +
+     x = "", y = "Annualised SD") +
   fmxdat::theme_fmx()
 
 fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
@@ -425,7 +425,7 @@ This section will construct a momentum and a low volatility score for each stock
 # Rolling SD of daily returns over 126 days (6 months) (same as Part A)
 Own_LowVol <-
   Stocks %>%
-  Q1_Rolling_Vol(Window = 126) %>%
+  Rolling_Vol(Window = 126) %>%
   # Keep the last trading day of each month
   mutate(YM = format(date, "%Y%B")) %>%
   group_by(Tickers, YM) %>%
@@ -637,12 +637,10 @@ left_join(
 ```{r Table_Enviro, results = 'asis'}
 Enviro_Tab <-
   df_comp_plot %>% filter(!is.na(EPU), !is.na(Disp)) %>%
-  mutate( hiEPU = quantile(EPU, 0.85),
-          loEPU = quantile(EPU, 0.25)) %>%
-  mutate(Enviro = ifelse(EPU > hiEPU, "High uncertainty",
-                         ifelse(EPU < loEPU, "Low uncertainty",
-                                "Other"))) %>%
-  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T))
+  rename(Value = EPU) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "uncertainty") %>%
+  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T)) %>%
+  rename(Environment = Enviro)
 
 Table <- xtable(Enviro_Tab, caption = "Average dispersion and correlation by level of global policy uncertainty \\label{Table_Enviro}", digits = 3)
 print(Table, type = "latex", comment = FALSE, include.rownames = FALSE, table.placement = 'H')

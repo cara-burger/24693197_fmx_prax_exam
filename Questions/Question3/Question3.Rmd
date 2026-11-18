@@ -236,19 +236,15 @@ Disp_M <-
   ann_disp %>%
   mutate(YM = format(date, "%Y%B")) %>%
   group_by(YM) %>% filter(date == last(date)) %>% ungroup() %>%
-  select(YM, Disp = Dispersion_W)
+  select(YM, Value = Dispersion_W)
 
 # Fund returns joined to dispersion, split into high, low and other, then averaged
 Enviro_Tab <-
   Q3_Rel_12m(Funds, BM_Monthly, Fund = "ABC_Fund") %>%
   left_join(Disp_M, by = "YM") %>%
   ungroup() %>%
-  filter(!is.na(Disp)) %>%
-  mutate( hidisp = quantile(Disp, 0.85),
-          lodisp = quantile(Disp, 0.25)) %>%
-  mutate(Enviro = ifelse(Disp > hidisp, "High dispersion",
-                         ifelse(Disp < lodisp, "Low dispersion",
-                                "Other"))) %>%
+  filter(!is.na(Value)) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "dispersion") %>%
   group_by(Enviro, Group) %>%
   summarise(XS = mean(XS))
 ```
