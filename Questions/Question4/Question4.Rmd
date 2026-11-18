@@ -133,6 +133,40 @@ LCL_Yield <- read_rds("data/Monthly_LCL_Yield_Indexes.rds")
 # Data and approach \label{Data}
 
 ## Asset universe
+This section will look at the assets that the fund can hold. An asset universe refers to the full set of assets that a portfolio is allowed to choose from. Global equity is represented by the MSCI USA, Europe and Japan indexes, which are the largest developed markets, and the MSCI Emerging Markets index. A single world index was not used, as it already includes these regions and would count the same stocks twice. Local equity is represented by the JSE Top 40 (J200), the Mid Cap index (J201), the value and momentum style indexes and the listed property index (J253). Listed property is grouped with equities, as there is no separate limit for property. Bonds are represented by the ALBI and the inflation-linked bond index (CILI) locally, and by 10 year government bonds from the US, Germany and the UK globally. Commodities are represented by gold and the Bloomberg Commodity Index. Oil was not included separately, as the commodity index already contains oil.
+
+All returns are monthly. The global indexes are in USD and the local indexes are in ZAR, and there was no exchange rate series available to convert them. Therefore, the global returns do not include currency movements and should be interpreted with caution.
+
+```{r Rets_Universe}
+# Asset class and region of each asset (used for the group limits)
+ref <- bind_rows(tibble(Name = c("MSCI_USA", "MSCI_EU", "MSCI_Jap", "MSCI_EM"),
+         Class = "Equity", Region = "Global"),
+  tibble(Name = c("J200", "J201", "STXVALJ433", "STXMOMJ433", "J253"),
+         Class = "Equity", Region = "Local"),
+  tibble(Name = c("US_10Yr", "Germany_10Yr", "UK_10Yr"),
+         Class = "Bonds", Region = "Global"),
+  tibble(Name = c("ALBITR", "CILITR"),
+         Class = "Bonds", Region = "Local"),
+  tibble(Name = c("Gold", "Bcom_Index"),
+         Class = "Commodities", Region = "Global"))
+
+# Monthly returns of all assets in one data frame
+Q4_Returns <- Q4_Build_Fund(MSCI, Bond_Yields, Commods, Idx_Daily, LCL_Yield, ref)
+```
+
+```{r Table_Assets, results = 'asis'}
+# Class, region, first month and number of months of each asset
+Asset_Tab <-
+  Q4_Returns %>%
+  group_by(Name, Class, Region) %>%
+  summarise(Start = format(min(date), "%b %Y"), Months = n()) %>%
+  ungroup() %>%
+  arrange(Class, Region)
+
+Table <- xtable(Asset_Tab, caption = "Assets available to the fund \\label{Table_Assets}")
+print(Table, type = "latex", comment = FALSE, include.rownames = FALSE, table.placement = 'H')
+```
+
 
 # Methodology \label{Meth}
 
