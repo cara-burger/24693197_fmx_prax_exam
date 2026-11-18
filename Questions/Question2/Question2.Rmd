@@ -188,11 +188,43 @@ g_consvol <-
 fmxdat::finplot(g_consvol, y.pct = T, y.pct_acc = 1)
 ```
 
+```{r strat, results = 'asis'}
+# Daily index returns with the same labels as the constituent data
+Idxs <-
+  Idx_Daily %>%
+  mutate(Fund = ifelse(Tickers == "J200", "LargeCaps",
+                ifelse(Tickers == "J201", "MidCaps",
+                ifelse(Tickers == "J202", "SmallCaps", "CappedSWIX")))) %>%
+  select(date, Tickers = Fund, Return = Returns) %>%
+  filter(!is.na(Return)) %>%
+  mutate(YM = format(date, "%Y%B"))
+
+# Monthly Capped SWIX volatility, split into high (above the 85th percentile), low (below the 25th) and other
+SWIX_Vol <-
+  Idxs %>%
+  filter(Tickers == "CappedSWIX") %>%
+  group_by(YM) %>% summarise(Value = sd(Return) * sqrt(252)) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "volatility") %>%
+  select(YM, Enviro)
+
+# Annualised SD and return of each index in each environment
+Strat_Tab <-
+  left_join(Idxs, SWIX_Vol, by = "YM") %>%
+  group_by(Enviro, Tickers) %>%
+  summarise(SD = sd(Return) * sqrt(252), Ret = mean(Return) * 252) %>%
+  ungroup() %>%
+  rename(Index = Tickers)
+
+print(xtable(Strat_Tab, caption = "Annualised return and SD by Capped SWIX volatility environment \\label{tab:strat}", digits = 3),
+      floating = TRUE, table.placement = 'H', comment = FALSE,
+      caption.placement = 'bottom', include.rownames = FALSE)
+```
 
 # Returns \label{Ret}
 
 
-
 # Active Share \label{AS}
+
+
 
 # Conclusion \label{Conc}
