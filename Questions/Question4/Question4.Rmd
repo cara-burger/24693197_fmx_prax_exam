@@ -123,6 +123,7 @@ Bond_Yields <- read_rds("data/Global_Bond_Yields.rds")
 Commods <- read_rds("data/Commodities.rds")
 Idx_Daily <- read_rds("data/Index_Returns_Daily.rds")
 LCL_Yield <- read_rds("data/Monthly_LCL_Yield_Indexes.rds")
+STeFI <- read_rds("data/STeFI_Index.rds")
 ```
 
 <!-- ############################## -->
@@ -217,19 +218,21 @@ Q4_Weights <-
 
 # Results \label{Results}
 
-This section will look at how the fund performed compared to two other portfolios. The first is a strategic balanced allocation, which holds fixed weights based on the published benchmark weights of a South African balanced index fund. These are 40% in the Capped SWIX, 30% in MSCI World, 8% in MSCI Emerging Markets, 19% in the ALBI and 3% in listed property. Its weights are reset on the same quarterly dates as the fund. The second is the Capped SWIX on its own, which shows how the fund compares to holding only local equities.
+This section will look at how the fund performed compared to two other portfolios. The first is a strategic balanced allocation, which holds fixed weights based on the published benchmark weights of a South African balanced index fund (see Satrix Balanced Index fund pdf in the bin folder). These are 40% in the Capped SWIX, 30% in MSCI World, 8% in MSCI Emerging Markets, 17% in the ALBI, 3% in listed property and 2% in cash (STeFI). Its weights are reset on the same quarterly dates as the fund. The second is the Capped SWIX on its own, which shows how the fund compares to holding only local equities.
 
 ```{r Port_Returns}
 # minimum variance fund returns
 MinVol_Rets <- Q4_Port_Returns(Weights = Q4_Weights %>% select(date, Tickers, Weight = minvol), Returns = Q4_Returns %>% select(date, Tickers = Name, Returns), Name = "Minimum variance")
 
 # monthly returns for the strategic balanced allocation
-ref_bm <- tibble(Name = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253"))
-BM_Returns <- Q4_Build_Fund(MSCI, Bond_Yields, Commods, Idx_Daily, LCL_Yield, ref_bm)
+ref_bm <- tibble(Name = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253", "STEFI"))
+BM_Returns <- Q4_Build_Fund(MSCI, Bond_Yields, Commods,
+                            bind_rows(Idx_Daily, STeFI %>% select(date, Tickers, Returns)),
+                            LCL_Yield, ref_bm)
 
 # Create the benchmark with fixed weights, reset on the same quarter-end dates as the fund
-Port_BM <- tibble(Tickers = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253"),
-                  Weight  = c(0.40, 0.30, 0.08, 0.19, 0.03))
+Port_BM <- tibble(Tickers = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253", "STEFI"),
+                  Weight  = c(0.40, 0.30, 0.08, 0.17, 0.03, 0.02))
 
 BM_Weights <- unique(Q4_Weights$date) %>% map_df(~Port_BM %>% mutate(date = .x))
 
@@ -268,6 +271,7 @@ g_cum <-
 fmxdat::finplot(g_cum)
 ```
 
+Figure \ref{Figure_Cum} shows the growth of R1 invested in the fund and the two comparison portfolios since January 2020. As all three portfolios start on the same date, the comparison is not distorted by different start dates. The fund fell by less than both comparison portfolios during the 2020 market decline (Covid period). However, it grew more slowly from 2022 onwards and ends up below both the strategic balanced allocation and the Capped SWIX at the end of the period. This suggests that the fund offers more protection when markets fall, but that clearly comes with the cost of gains when the market experiences an upswing.
 
 ```{r Figure_DD, fig.align = 'center', fig.cap = "Drawdowns \\label{Figure_DD}", fig.height = 4, fig.width = 7, fig.ext = 'png'}
 # drawdown is the fall from the highest cumulative value reached so far
@@ -286,6 +290,8 @@ g_dd <-
 fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1)
 ```
 
+Figure \ref{Figure_DD} shows the drawdowns of each portfolio, which measure how far a portfolio falls from its previous peak. The fund had the smallest drawdown in 2020 and near the end of the sample. In 2022, however, its drawdown was similar to that of the strategic balanced allocation. Therefore, the lower volatility of the fund did not always lead to smaller losses.
+
 ```{r Figure_Weights, fig.align = 'center', fig.cap = "Weights plot \\label{Figure_Weights}", fig.height = 5, fig.width = 7, fig.ext = 'png'}
 g_wts <-
   Q4_Weights %>%
@@ -299,6 +305,8 @@ g_wts <-
 fmxdat::finplot(g_wts, y.pct = T, y.pct_acc = 1)
 ```
 
+Figure \ref{Figure_Weights} shows the weights of the fund at each rebalance. The limits on bonds, commodities and global assets are binding at every rebalance, so the split between asset classes stays the same throughout. The optimiser therefore mainly decides which assets to hold within each class. Gold makes up most of the commodity weight for most of the period. The local equity indices only enter the fund once they have five years of data and MSCI Japan has the largest global equity weight (over the period). As the global returns are in USD and the local returns in ZAR, part of the preference for global assets may be due to currency movements. Therefore, the weights should be interpreted with caution.
+
 ```{r Table_Stats, results = 'asis'}
 # Statistics relative to the strategic balanced allocation, over the last 3 and 5 years
 Tab_stats <-
@@ -311,10 +319,11 @@ Tab_stats <-
 Table <- xtable(Tab_stats, caption = "Fund Moments Comparison: relative to the strategic balanced allocation \\label{Table_Stats}", digits = 3)
 ```
 
-
+Table \ref{Table_Stats} compares the three portfolios over the last three and five years, with the strategic balanced allocation as the benchmark. The fund has the lowest volatility over both periods, as well as the smallest average drawdown and the smallest modified CVaR. Its beta is also below one, which means that it moves less than the benchmark. However, this lower risk came with lower returns (as we saw in the cummulative returns figure). Over five years, the fund’s annualised return is below that of the benchmark and its information ratio is negative over both periods. Over the last three years, the fund earned a similar return to the Capped SWIX with much lower volatility. This suggests that the fund achieves what a minimum variance approach aims for (lower risk), but it did so at the cost of some of the returns.
 
 # Conclusion \label{Conclusion}
 
+This report constructed a Global Balanced Index Fund that minimises variance within the given limits and is rebalanced every quarter. The limits on bonds, commodities and global assets were binding throughout. Thus, the split between asset classes was largely set by the limits and the optimiser mainly chose the assets within each class. The fund had lower volatility than both the strategic balanced allocation and the Capped SWIX and it declined by less during sharp equity declines. However, it also earned lower returns and its losses were not always smaller than those of the benchmark. These results should be interpreted with caution, due to the short sample and the global returns are in USD and the bond returns are approximations. As the output of an optimiser is a guide rather than the truth, the weights are best used as a starting point for further discussion.
 
 
 \newpage
