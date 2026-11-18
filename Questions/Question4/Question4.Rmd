@@ -106,6 +106,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 # These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
 
 # Lets load in example data, and see how this can be stored and later called from your 'data' folder.
+pacman::p_load("xts", "tbl2xts", "PerformanceAnalytics", "lubridate", "glue", "rmsfuns", "RiskPortfolios", "quadprog", "xtable")
 if(!require("tidyverse")) install.packages("tidyverse")
 library(tidyverse)
 
@@ -130,12 +131,20 @@ LCL_Yield <- read_rds("data/Monthly_LCL_Yield_Indexes.rds")
 
 # Introduction \label{Introduction}
 
+Note: I was not sure what the desired output for this was so I just went with a Texevier pdf :)
+
+This report will construct a Global Balanced Index Fund using a mix of traded global and local indexes. A balanced fund holds a mix of asset classes, such as equities, bonds and commodities, and typically follows a strategic asset allocation that is re-evaluated over time. As the fund is built from indexes, the main decision is how much to allocate to each index. The fund is rebalanced every quarter and must meet a set of limits on its exposures, which are set out in Section \ref{Construction}.
+
 # Data and approach \label{Data}
 
-## Asset universe
-This section will look at the assets that the fund can hold. An asset universe refers to the full set of assets that a portfolio is allowed to choose from. Global equity is represented by the MSCI USA, Europe and Japan indexes, which are the largest developed markets, and the MSCI Emerging Markets index. A single world index was not used, as it already includes these regions and would count the same stocks twice. Local equity is represented by the JSE Top 40 (J200), the Mid Cap index (J201), the value and momentum style indexes and the listed property index (J253). Listed property is grouped with equities, as there is no separate limit for property. Bonds are represented by the ALBI and the inflation-linked bond index (CILI) locally, and by 10 year government bonds from the US, Germany and the UK globally. Commodities are represented by gold and the Bloomberg Commodity Index. Oil was not included separately, as the commodity index already contains oil.
+This section will look at the assets that the fund can hold:
 
-All returns are monthly. The global indexes are in USD and the local indexes are in ZAR, and there was no exchange rate series available to convert them. Therefore, the global returns do not include currency movements and should be interpreted with caution.
+* Global equity: MSCI USA, Europe, Japan and Emerging Markets indexes.
+* Local equity: the J200, the Mid Cap index (J201), the value and momentum style indexes and listed property (J253).
+* Bonds: the ALBI and inflation-linked bonds (CILI) locally, and US, German and UK 10 year government bonds globally.
+* Commodities: gold and the Bloomberg Commodity Index.
+
+The bond data is given as yields, so these were first converted to monthly returns (as per the instructions in the exam paper). The return is calculated as last month’s yield divided by twelve, minus the modified duration multiplied by the change in yield. Modified duration refers to how sensitive a bond’s price is to a change in its yield and 9 was used based on the average yield since 2010 (see root readme). Therefore, the bond returns are an approximation.
 
 ```{r Rets_Universe}
 # Asset class and region of each asset (used for the group limits)
@@ -167,8 +176,26 @@ Table <- xtable(Asset_Tab, caption = "Assets available to the fund \\label{Table
 print(Table, type = "latex", comment = FALSE, include.rownames = FALSE, table.placement = 'H')
 ```
 
+# Constructing the fund \label{Construction}
 
-# Methodology \label{Meth}
+This section will look at how the weights of the fund are chosen. The fund must meet the following requirements:
+
+* Long-only strategy.
+* When using covariance and mean forecasts, use a look-back of at least 10 years.
+* Do not hold any assets with less than 5 years' returns data.
+* Apply quarterly rebalancing.
+* Limit exposure to bonds and credit instruments at 25%.
+* Limit exposure to equities at 75%.
+* Limit exposure to commodities to 15%.
+* Limit single asset exposure to 35%.
+* Global exposure limit 60%.
+
+The fund is also fully invested, tbus the weights sum to one.
+
+With these limits kept in mind, the weights are chosen so that the fund has the lowest possible variance. Minimum variance is an objective optimisation technique, as it does not depend on a risk or return preference. The accuracy of an optimiser out of sample depends on the quality of the return forecasts and the stability of the covariance matrix. Therefore, minimum variance was chosen as it does not need return forecasts. It only uses the covariance matrix, and this shows how the assets move together. Outliers have a large effect on the covariance matrix. For this reason, it is estimated using Ledoit-Wolf shrinkage. Shrinkage pulls the most extreme coefficients toward more central values and reduces estimation error. The covariance matrix also needs a full square matrix of returns with no missing values. Some assets only have between five and ten years of data and therefore have gaps in the ten year window. These gaps are filled with random draws from each asset’s own return distribution. This preserves the distribution of each asset.
+
+
+
 
 # Results \label{Results}
 
