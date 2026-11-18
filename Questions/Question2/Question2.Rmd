@@ -222,6 +222,36 @@ print(xtable(Strat_Tab, caption = "Annualised return and SD by Capped SWIX volat
 
 # Returns \label{Ret}
 
+```{r roll_rets, fig.cap = "Rolling three year annualised returns \\label{fig:rollrets}", fig.height = 4}
+
+# Monthly returns of the size indexes and the Capped SWIX, with the same labels as the constituent data
+Idx_Monthly <-
+  Idx_Daily %>%
+  filter(Tickers %in% c("J200", "J201", "J202", "J433")) %>%
+  Daily_to_Monthly() %>%
+  mutate(Fund = ifelse(Tickers == "J200", "LargeCaps",
+                ifelse(Tickers == "J201", "MidCaps",
+                ifelse(Tickers == "J202", "SmallCaps", "CappedSWIX"))))
+
+# Rolling 3 year annualised returns
+Roll_Rets <-
+  Idx_Monthly %>%
+  group_by(Fund) %>%
+  mutate(RollRets = RcppRoll::roll_prod(1 + Ret, 36, fill = NA, align = "right") ^ (12/36) - 1) %>%
+  group_by(date) %>% filter(any(!is.na(RollRets))) %>%
+  ungroup()
+
+g_roll <-
+  Roll_Rets %>%
+  ggplot() +
+  geom_line(aes(date, RollRets, color = Fund), alpha = 0.8) +
+  labs(title = "Rolling 3 Year Annualised Returns",
+       subtitle = "Size indexes compared to the Capped SWIX",
+       x = "Year", y = "Rolling 3 year return (Ann.)") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
+```
 
 # Active Share \label{AS}
 
