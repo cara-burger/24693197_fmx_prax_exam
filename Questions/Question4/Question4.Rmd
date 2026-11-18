@@ -217,13 +217,104 @@ Q4_Weights <-
 
 # Results \label{Results}
 
+This section will look at how the fund performed compared to two other portfolios. The first is a strategic balanced allocation, which holds fixed weights based on the published benchmark weights of a South African balanced index fund. These are 40% in the Capped SWIX, 30% in MSCI World, 8% in MSCI Emerging Markets, 19% in the ALBI and 3% in listed property. Its weights are reset on the same quarterly dates as the fund. The second is the Capped SWIX on its own, which shows how the fund compares to holding only local equities.
+
 ```{r Port_Returns}
 # minimum variance fund returns
 MinVol_Rets <- Q4_Port_Returns(Weights = Q4_Weights %>% select(date, Tickers, Weight = minvol), Returns = Q4_Returns %>% select(date, Tickers = Name, Returns), Name = "Minimum variance")
+
+# monthly returns for the strategic balanced allocation
+ref_bm <- tibble(Name = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253"))
+BM_Returns <- Q4_Build_Fund(MSCI, Bond_Yields, Commods, Idx_Daily, LCL_Yield, ref_bm)
+
+# Create the benchmark with fixed weights, reset on the same quarter-end dates as the fund
+Port_BM <- tibble(Tickers = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253"),
+                  Weight  = c(0.40, 0.30, 0.08, 0.19, 0.03))
+
+BM_Weights <- unique(Q4_Weights$date) %>% map_df(~Port_BM %>% mutate(date = .x))
+
+BM_Rets <- Q4_Port_Returns(Weights = BM_Weights,
+                           Returns = BM_Returns %>% select(date, Tickers = Name, Returns),
+                           Name = "Strategic balanced allocation")
+
+# equity-only comparison: Capped SWIX over the same months
+SWIX_Rets <-
+  BM_Returns %>%
+  filter(Name == "J433", date > min(Q4_Weights$date)) %>%
+  select(date, Returns) %>%
+  mutate(Tickers = "Capped SWIX")
+```
+
+```{r Figure_Cum, fig.align = 'center', fig.cap = "Cumulative returns \\label{Figure_Cum}", fig.height = 4, fig.width = 7, fig.ext = 'png'}
+# All three return series in one data frame
+All_Rets <- bind_rows(MinVol_Rets, BM_Rets, SWIX_Rets)
+
+g_cum <-
+  All_Rets %>%
+  arrange(date) %>%
+  group_by(Tickers) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  # start every series at 1
+  mutate(CP = CP / first(CP)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_line(aes(date, CP, color = Tickers)) +
+  labs(title = "Cumulative Returns",
+       subtitle = "Minimum variance fund vs strategic balanced allocation and Capped SWIX",
+       x = "Year", y = "Growth of R1 invested in 2020",
+       caption = "Note:\nAll portfolios start in January 2020.") +
+  fmxdat::theme_fmx(CustomCaption = T)
+
+fmxdat::finplot(g_cum)
 ```
 
 
+```{r Figure_DD, fig.align = 'center', fig.cap = "Drawdowns \\label{Figure_DD}", fig.height = 4, fig.width = 7, fig.ext = 'png'}
+# drawdown is the fall from the highest cumulative value reached so far
+g_dd <-
+  All_Rets %>%
+  arrange(date) %>%
+  group_by(Tickers) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  mutate(Drawdown = CP / cummax(CP) - 1) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_line(aes(date, Drawdown, color = Tickers)) +
+  labs(title = "Drawdowns: Minimum Variance Fund and Comparison Portfolios", subtitle = "Fall from the previous peak", x = "Year", y = "Drawdown") +
+  fmxdat::theme_fmx()
+
+fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1)
+```
+
+```{r Figure_Weights, fig.align = 'center', fig.cap = "Weights plot \\label{Figure_Weights}", fig.height = 5, fig.width = 7, fig.ext = 'png'}
+g_wts <-
+  Q4_Weights %>%
+  # order the assets by class so each class is stacked together
+  mutate(Tickers = factor(Tickers, levels = ref$Name)) %>%
+  ggplot() +
+  geom_bar(aes(date, minvol, fill = Tickers), stat = "identity") +
+  labs(title = "Weights Plot", subtitle = "Stacked bar of the fund weights at each quarterly rebalance", x = "Year", y = "Weight") +
+  fmxdat::theme_fmx()
+
+fmxdat::finplot(g_wts, y.pct = T, y.pct_acc = 1)
+```
+
+```{r Table_Stats, results = 'asis'}
+# Statistics relative to the strategic balanced allocation, over the last 3 and 5 years
+Tab_stats <-
+  bind_rows(
+    Moments_Comp(All_Rets %>% select(date, Tickers, Ret = Returns), BM = "Strategic balanced allocation", Yrs_LookBack = 3, NA_Check = 0.8),
+    Moments_Comp(All_Rets %>% select(date, Tickers, Ret = Returns), BM = "Strategic balanced allocation", Yrs_LookBack = 5, NA_Check = 0.8)
+  ) %>%
+  mutate(Period = as.character(Period))
+
+Table <- xtable(Tab_stats, caption = "Fund Moments Comparison: relative to the strategic balanced allocation \\label{Table_Stats}", digits = 3)
+```
+
+
+
 # Conclusion \label{Conclusion}
+
 
 
 \newpage

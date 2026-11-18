@@ -1,0 +1,463 @@
+\documentclass[11pt,preprint]{elsarticle}
+
+\usepackage{lmodern}
+%%%% My spacing
+\usepackage{setspace}
+\setstretch{1.2}
+\DeclareMathSizes{12}{14}{10}{10}
+
+% Wrap around which gives all figures included the [H] command, or places it "here". This can be tedious to code in Rmarkdown.
+\usepackage{float}
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+\renewenvironment{figure}[1][2] {
+    \expandafter\origfigure\expandafter[H]
+} {
+    \endorigfigure
+}
+
+\let\origtable\table
+\let\endorigtable\endtable
+\renewenvironment{table}[1][2] {
+    \expandafter\origtable\expandafter[H]
+} {
+    \endorigtable
+}
+
+
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+
+\def\bibsection{\section*{References}} %%% Make "References" appear before bibliography
+
+
+\usepackage[numbers]{natbib}
+
+\usepackage{longtable}
+\usepackage[margin=2.3cm,bottom=2cm,top=2.5cm, includefoot]{geometry}
+\usepackage{fancyhdr}
+\usepackage[bottom, hang, flushmargin]{footmisc}
+\usepackage{graphicx}
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{1.3ex plus 0.5ex minus 0.3ex}
+\usepackage{textcomp}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+
+%%%%  Remove the "preprint submitted to" part. Don't worry about this either, it just looks better without it:
+\makeatletter
+\def\ps@pprintTitle{%
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@oddfoot
+}
+\makeatother
+
+ \def\tightlist{} % This allows for subbullets!
+
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=blue,
+            pdfborder={0 0 0}}
+
+
+% The following packages allow huxtable to work:
+\usepackage{siunitx}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{calc}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption}
+
+
+\newenvironment{columns}[1][]{}{}
+
+\newenvironment{column}[1]{\begin{minipage}{#1}\ignorespaces}{%
+\end{minipage}
+\ifhmode\unskip\fi
+\aftergroup\useignorespacesandallpars}
+
+\def\useignorespacesandallpars#1\ignorespaces\fi{%
+#1\fi\ignorespacesandallpars}
+
+\makeatletter
+\def\ignorespacesandallpars{%
+  \@ifnextchar\par
+    {\expandafter\ignorespacesandallpars\@gobble}%
+    {}%
+}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+\href{\#cite.\detokenize{#1}}{#2}\nocite{#1}}
+
+\makeatletter
+% allow citations to break across lines
+\let\@cite@ofmt\@firstofone
+% avoid brackets around text for \cite:
+\def\@biblabel#1{}
+\def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+{\begin{list}{}{%
+	\setlength{\itemindent}{0pt}
+	\setlength{\leftmargin}{0pt}
+	\setlength{\parsep}{0pt}
+	% turn on hanging indent if param 1 is 1
+	\ifodd #1
+	\setlength{\leftmargin}{\cslhangindent}
+	\setlength{\itemindent}{-1\cslhangindent}
+	\fi
+	% set entry spacing
+	\setlength{\itemsep}{#2\baselineskip}}}
+{\end{list}}
+
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{5}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+%%% Include extra packages specified by user
+
+%%% Hard setting column skips for reports - this ensures greater consistency and control over the length settings in the document.
+%% page layout
+%% paragraphs
+\setlength{\baselineskip}{12pt plus 0pt minus 0pt}
+\setlength{\parskip}{12pt plus 0pt minus 0pt}
+\setlength{\parindent}{0pt plus 0pt minus 0pt}
+%% floats
+\setlength{\floatsep}{12pt plus 0 pt minus 0pt}
+\setlength{\textfloatsep}{20pt plus 0pt minus 0pt}
+\setlength{\intextsep}{14pt plus 0pt minus 0pt}
+\setlength{\dbltextfloatsep}{20pt plus 0pt minus 0pt}
+\setlength{\dblfloatsep}{14pt plus 0pt minus 0pt}
+%% maths
+\setlength{\abovedisplayskip}{12pt plus 0pt minus 0pt}
+\setlength{\belowdisplayskip}{12pt plus 0pt minus 0pt}
+%% lists
+\setlength{\topsep}{10pt plus 0pt minus 0pt}
+\setlength{\partopsep}{3pt plus 0pt minus 0pt}
+\setlength{\itemsep}{5pt plus 0pt minus 0pt}
+\setlength{\labelsep}{8mm plus 0mm minus 0mm}
+\setlength{\parsep}{\the\parskip}
+\setlength{\listparindent}{\the\parindent}
+%% verbatim
+\setlength{\fboxsep}{5pt plus 0pt minus 0pt}
+
+
+
+\begin{document}
+
+
+
+\begin{frontmatter}  %
+
+\title{Question 4: Global Balanced Index Fund Construction}
+
+% Set to FALSE if wanting to remove title (for submission)
+
+
+
+
+\author[Add1]{24693197}
+\ead{24693197@sun.ac.za}
+
+\author[Add1,Add2]{John Smith}
+\ead{John@gmail.com}
+
+\author[Add1,Add2]{John Doe}
+\ead{Joe@gmail.com}
+
+
+
+\address[Add1]{Stellenbosch University, Stellenbosch, South Africa}
+\address[Add2]{Some other Institution, Cape Town, South Africa}
+
+\cortext[cor]{Corresponding author: 24693197}
+
+\begin{abstract}
+\small{
+Abstract to be written here. The abstract should not be too long and
+should provide the reader with a good understanding what you are writing
+about. Academic papers are not like novels where you keep the reader in
+suspense. To be effective in getting others to read your paper, be as
+open and concise about your findings here as possible. Ideally, upon
+reading your abstract, the reader should feel he / she must read your
+paper in entirety.
+}
+\end{abstract}
+
+\vspace{1cm}
+
+
+\begin{keyword}
+\footnotesize{
+Multivariate GARCH \sep Kalman Filter \sep Copula \\
+\vspace{0.3cm}
+}
+\footnotesize{
+\textit{JEL classification} L250 \sep L100
+}
+\end{keyword}
+
+
+
+\vspace{0.5cm}
+
+\end{frontmatter}
+
+\setcounter{footnote}{0}
+
+
+
+%________________________
+% Header and Footers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}
+\chead{}
+\rhead{}
+\lfoot{}
+\rfoot{\footnotesize Page \thepage}
+\lhead{}
+%\rfoot{\footnotesize Page \thepage } % "e.g. Page 2"
+\cfoot{}
+
+%\setlength\headheight{30pt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%________________________
+
+\headsep 35pt % So that header does not go over title
+
+
+
+
+\section{\texorpdfstring{Introduction
+\label{Introduction}}{Introduction }}\label{introduction}
+
+Note: I was not sure what the desired output for this was so I just went
+with a Texevier pdf :)
+
+This report will construct a Global Balanced Index Fund using a mix of
+traded global and local indexes. A balanced fund holds a mix of asset
+classes, such as equities, bonds and commodities, and typically follows
+a strategic asset allocation that is re-evaluated over time. As the fund
+is built from indexes, the main decision is how much to allocate to each
+index. The fund is rebalanced every quarter and must meet a set of
+limits on its exposures, which are set out in Section
+\ref{Construction}.
+
+\section{\texorpdfstring{Data and approach
+\label{Data}}{Data and approach }}\label{data-and-approach}
+
+This section will look at the assets that the fund can hold:
+
+\begin{itemize}
+\tightlist
+\item
+  Global equity: MSCI USA, Europe, Japan and Emerging Markets indexes.
+\item
+  Local equity: the J200, the Mid Cap index (J201), the value and
+  momentum style indexes and listed property (J253).
+\item
+  Bonds: the ALBI and inflation-linked bonds (CILI) locally, and US,
+  German and UK 10 year government bonds globally.
+\item
+  Commodities: gold and the Bloomberg Commodity Index.
+\end{itemize}
+
+The bond data is given as yields, so these were first converted to
+monthly returns (as per the instructions in the exam paper). The return
+is calculated as last month's yield divided by twelve, minus the
+modified duration multiplied by the change in yield. Modified duration
+refers to how sensitive a bond's price is to a change in its yield and 9
+was used based on the average yield since 2010 (see root readme).
+Therefore, the bond returns are an approximation.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllr}
+  \hline
+Name & Class & Region & Start & Months \\ 
+  \hline
+Germany\_10Yr & Bonds & Global & Feb 2005 & 260 \\ 
+  UK\_10Yr & Bonds & Global & Feb 2005 & 260 \\ 
+  US\_10Yr & Bonds & Global & Feb 2005 & 260 \\ 
+  ALBITR & Bonds & Local & Feb 2001 & 308 \\ 
+  CILITR & Bonds & Local & Mar 2007 & 235 \\ 
+  Bcom\_Index & Commodities & Global & Feb 2005 & 260 \\ 
+  Gold & Commodities & Global & Feb 2005 & 260 \\ 
+  MSCI\_EM & Equity & Global & Feb 2005 & 260 \\ 
+  MSCI\_EU & Equity & Global & Feb 2005 & 260 \\ 
+  MSCI\_Jap & Equity & Global & Feb 2005 & 260 \\ 
+  MSCI\_USA & Equity & Global & Feb 2005 & 260 \\ 
+  J200 & Equity & Local & Feb 2015 & 140 \\ 
+  J201 & Equity & Local & Feb 2015 & 140 \\ 
+  J253 & Equity & Local & Jan 2002 & 297 \\ 
+  STXMOMJ433 & Equity & Local & Apr 2017 & 114 \\ 
+  STXVALJ433 & Equity & Local & Apr 2018 & 102 \\ 
+   \hline
+\end{tabular}
+\caption{Assets available to the fund \label{Table_Assets}} 
+\end{table}
+
+\section{\texorpdfstring{Constructing the fund
+\label{Construction}}{Constructing the fund }}\label{constructing-the-fund}
+
+This section will look at how the weights of the fund are chosen. The
+fund must meet the following requirements:
+
+\begin{itemize}
+\tightlist
+\item
+  Long-only strategy.
+\item
+  When using covariance and mean forecasts, use a look-back of at least
+  10 years.
+\item
+  Do not hold any assets with less than 5 years' returns data.
+\item
+  Apply quarterly rebalancing.
+\item
+  Limit exposure to bonds and credit instruments at 25\%.
+\item
+  Limit exposure to equities at 75\%.
+\item
+  Limit exposure to commodities to 15\%.
+\item
+  Limit single asset exposure to 35\%.
+\item
+  Global exposure limit 60\%.
+\end{itemize}
+
+The fund is also fully invested, tbus the weights sum to one.
+
+With these limits kept in mind, the weights are chosen so that the fund
+has the lowest possible variance. Minimum variance is an objective
+optimisation technique, as it does not depend on a risk or return
+preference. The accuracy of an optimiser out of sample depends on the
+quality of the return forecasts and the stability of the covariance
+matrix. Therefore, minimum variance was chosen as it does not need
+return forecasts. It only uses the covariance matrix, and this shows how
+the assets move together. Outliers have a large effect on the covariance
+matrix. For this reason, it is estimated using Ledoit-Wolf shrinkage.
+Shrinkage pulls the most extreme coefficients toward more central values
+and reduces estimation error. The covariance matrix also needs a full
+square matrix of returns with no missing values. Some assets only have
+between five and ten years of data and therefore have gaps in the ten
+year window. These gaps are filled with random draws from each asset's
+own return distribution. This preserves the distribution of each asset.
+
+\section{\texorpdfstring{Results
+\label{Results}}{Results }}\label{results}
+
+This section will look at how the fund performed compared to two other
+portfolios. The first is a strategic balanced allocation, which holds
+fixed weights based on the published benchmark weights of a South
+African balanced index fund. These are 40\% in the Capped SWIX, 30\% in
+MSCI World, 8\% in MSCI Emerging Markets, 19\% in the ALBI and 3\% in
+listed property. Its weights are reset on the same quarterly dates as
+the fund. The second is the Capped SWIX on its own, which shows how the
+fund compares to holding only local equities.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{Question4_files/figure-latex/Figure_Cum-1} 
+
+}
+
+\caption{Cumulative returns \label{Figure_Cum}}\label{fig:Figure_Cum}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{Question4_files/figure-latex/Figure_DD-1} 
+
+}
+
+\caption{Drawdowns \label{Figure_DD}}\label{fig:Figure_DD}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{Question4_files/figure-latex/Figure_Weights-1} 
+
+}
+
+\caption{Weights plot \label{Figure_Weights}}\label{fig:Figure_Weights}
+\end{figure}
+
+\section{\texorpdfstring{Conclusion
+\label{Conclusion}}{Conclusion }}\label{conclusion}
+
+\newpage
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+
+\section*{Appendix}\label{appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+\subsection*{Appendix A}\label{appendix-a}
+\addcontentsline{toc}{subsection}{Appendix A}
+
+Some appendix information here
+
+\subsection*{Appendix B}\label{appendix-b}
+\addcontentsline{toc}{subsection}{Appendix B}
+
+\bibliography{Tex/ref}
+
+
+
+
+
+\end{document}
