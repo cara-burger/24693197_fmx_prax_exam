@@ -135,6 +135,39 @@ Size_Clean <-
 
 # Sector Exposure and Concentration \label{Comp}
 
+```{r sector, fig.cap = "Sector exposure by index \\label{fig:sector}", fig.height = 5}
+g_sector <-
+Size_Clean %>%
+ggplot() +
+geom_bar(aes(date, Weight, fill = Sector), stat = "identity") +
+facet_wrap(~Fund) +
+labs(title = "Sector Exposure by Index",
+subtitle = "Monthly constituent weights grouped by sector",
+x = "Year", y = "Sector weight") +
+fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_sector, y.pct = T, y.pct_acc = 1)
+```
+
+```{r conc, fig.cap = "Weight of the ten largest stocks in each index \\label{fig:conc}", fig.height = 4}
+Conc <-
+Size_Clean %>%
+group_by(Fund, date) %>%
+arrange(desc(Weight)) %>%
+top_n(10, Weight) %>%
+summarise(Top10 = sum(Weight))
+
+g_conc <-
+Conc %>%
+ggplot() +
+geom_line(aes(date, Top10, color = Fund), alpha = 0.8) +
+labs(title = "Top 10 Stock Concentration",
+subtitle = "Combined weight of the ten largest stocks in each index",
+x = "Year", y = "Weight of top 10 stocks") +
+fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_conc, y.pct = T, y.pct_acc = 1)
+```
 
 
 # Volatility \label{Vol}
