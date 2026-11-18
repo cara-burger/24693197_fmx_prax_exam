@@ -194,10 +194,34 @@ The fund is also fully invested, tbus the weights sum to one.
 
 With these limits kept in mind, the weights are chosen so that the fund has the lowest possible variance. Minimum variance is an objective optimisation technique, as it does not depend on a risk or return preference. The accuracy of an optimiser out of sample depends on the quality of the return forecasts and the stability of the covariance matrix. Therefore, minimum variance was chosen as it does not need return forecasts. It only uses the covariance matrix, and this shows how the assets move together. Outliers have a large effect on the covariance matrix. For this reason, it is estimated using Ledoit-Wolf shrinkage. Shrinkage pulls the most extreme coefficients toward more central values and reduces estimation error. The covariance matrix also needs a full square matrix of returns with no missing values. Some assets only have between five and ten years of data and therefore have gaps in the ten year window. These gaps are filled with random draws from each asset’s own return distribution. This preserves the distribution of each asset.
 
+```{r Roll_Weights, cache = TRUE}
+# wide return matrix from 2010 onwards
+return_mat <-
+  Q4_Returns %>%
+  filter(date >= ymd(20100101)) %>%
+  select(date, Name, Returns) %>%
+  spread(Name, Returns)
 
+# quarter-end rebalance dates
+EOM_datevec <-
+  return_mat %>% select(date) %>% unique %>%
+  mutate(YM = format(date, "%Y%B")) %>% group_by(YM) %>% filter(date == last(date)) %>% ungroup() %>%
+  mutate(Months = as.numeric(format(date, format = "%m"))) %>% filter(Months %in% c(3, 6, 9, 12)) %>%
+  pull(date) %>% unique
+
+# minimum variance weights at each rebalance date
+Q4_Weights <-
+  EOM_datevec %>% map_df(~Q4_Roll_Optimizer(return_mat, EOM_datevec = ., ref, LookBackSel = 120))
+```
 
 
 # Results \label{Results}
+
+```{r Port_Returns}
+# minimum variance fund returns
+MinVol_Rets <- Q4_Port_Returns(Weights = Q4_Weights %>% select(date, Tickers, Weight = minvol), Returns = Q4_Returns %>% select(date, Tickers = Name, Returns), Name = "Minimum variance")
+```
+
 
 # Conclusion \label{Conclusion}
 
