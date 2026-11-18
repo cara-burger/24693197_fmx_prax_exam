@@ -172,6 +172,22 @@ fmxdat::finplot(g_conc, y.pct = T, y.pct_acc = 1)
 
 # Volatility \label{Vol}
 
+```{r cons_vol, fig.cap = "Rolling one year realised volatility of index constituents \\label{fig:consvol}", fig.height = 4}
+
+Cons_Vol <- Q2_Cons_Vol(Stocks, Size_Clean, Window = 252)
+
+g_consvol <-
+  Cons_Vol %>%
+  ggplot() +
+  geom_line(aes(date, RollSD, color = Fund), alpha = 0.8) +
+  labs(title = "Realised Volatility of Index Constituents",
+       subtitle = "Rolling 1 year standard deviation, annualised (weighted by index weight)",
+       x = "Year", y = "Annualised SD") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_consvol, y.pct = T, y.pct_acc = 1)
+```
+
 
 # Returns \label{Ret}
 
