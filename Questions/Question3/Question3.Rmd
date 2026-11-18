@@ -59,6 +59,13 @@ Funds <- bind_rows(Active_Manager_Peers, ABC_Fund) %>%
 
 ## Overview
 
+- This presentation compares the returns of ABC Fund to those of its active manager peers, with the Capped SWIX as the market benchmark.
+- It looks to answer four important and interesting questions:
+    - How much of peer returns is simply market returns?
+    - What drives ABC Fund's returns compared to its peers?
+    - How has ABC Fund performed relative to its peers over time?
+    - Does ABC Fund do better when market dispersion is high?
+
 ```{r Q3_Roll_Beta, cache = TRUE}
 # Rolling 36 month regression of each fund on the Capped SWIX (months with benchmark data only)
 Manager_list <- Funds %>% filter(YM %in% BM_Monthly$YM) %>% group_split(Name)
@@ -186,3 +193,59 @@ finplot(g_share, x.date.dist = "1 year", x.date.type = "%Y", x.vert = T, y.pct =
 
 - ABC Fund had a higher rolling 3 year return than most of its peers in almost every period since 2015.
 - Its performance has been weaker recently, which can be expected for a fund that is quite different from its peers.
+
+```{r Q3_Disp, cache = TRUE}
+# Capped SWIX constituents and benchmark returns
+J433_Cons <- Cons %>% filter(Index == "Capped SWIX")
+BM <- Idx_Daily %>% filter(Tickers == "J433") %>% select(date, BM = Returns)
+
+# Rolling 12 month (250 day) dispersion
+ann_disp <- Dispersion_Prep(df_used = J433_Cons, BMUse = BM, BMSel = "weight", NSel = 250)
+```
+
+```{r Q3_Enviro}
+# Month-end dispersion
+Disp_M <-
+  ann_disp %>%
+  mutate(YM = format(date, "%Y%B")) %>%
+  group_by(YM) %>% filter(date == last(date)) %>% ungroup() %>%
+  select(YM, Disp = Dispersion_W)
+
+# Fund returns joined to dispersion, split into high, low and other, then averaged
+Enviro_Tab <-
+  Q3_Rel_12m(Funds, BM_Monthly, Fund = "ABC_Fund") %>%
+  left_join(Disp_M, by = "YM") %>%
+  ungroup() %>%
+  filter(!is.na(Disp)) %>%
+  mutate( hidisp = quantile(Disp, 0.85),
+          lodisp = quantile(Disp, 0.25)) %>%
+  mutate(Enviro = ifelse(Disp > hidisp, "High dispersion",
+                         ifelse(Disp < lodisp, "Low dispersion",
+                                "Other"))) %>%
+  group_by(Enviro, Group) %>%
+  summarise(XS = mean(XS))
+```
+
+## ABC Fund has not outperformed its peers when dispersion is high
+
+```{r Q3_Dispersion}
+g_disp <-
+  Enviro_Tab %>%
+  ggplot() +
+  geom_bar(aes(Enviro, XS, fill = Group), stat = "identity", position = "dodge") +
+  geom_hline(yintercept = 0) +
+  labs(title = "ABC Fund compared to the average peer when market dispersion is high and low",
+       subtitle = "Average 12 month return above the market (Capped SWIX)",
+              caption = "High dispersion: the top 15% of months, when stock returns differed most from the market.",
+       x = "", y = "Return above the market") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_disp, y.pct = T, y.pct_acc = 0.1)
+```
+
+## Explanation
+- Market dispersion measures how much the returns of individual stocks differ from the return of the market. When it is high, active managers have more opportunity to differ from the market.
+- ABC Fund did better than the average peer in normal and calmer markets, which make up most of the period.
+- In periods of very high dispersion, ABC Fund performed in line with its peers.
+
+
