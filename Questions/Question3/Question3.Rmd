@@ -59,12 +59,12 @@ Funds <- bind_rows(Active_Manager_Peers, ABC_Fund) %>%
 
 ## Overview
 
-- This presentation compares the returns of ABC Fund to those of its active manager peers, with the Capped SWIX as the market benchmark.
-- It looks to answer four important and interesting questions:
-    - How much of peer returns is simply market returns?
-    - What drives ABC Fund's returns compared to its peers?
-    - How has ABC Fund performed relative to its peers over time?
-    - Does ABC Fund do better when market dispersion is high?
+- This presentation will look at how ABC Fund compares to its active manager peers, purely from a returns perspective. (The Capped SWIX is used as the market benchmark throughout).
+- It will look at:
+    - How much of the returns of active managers simply follow the market
+    - What drives the returns of ABC Fund compared to its peers
+    - How ABC Fund has performed relative to its peers over time
+    - How ABC Fund performs when the returns of individual stocks differ a lot (market dispersion)
 
 ```{r Q3_Roll_Beta, cache = TRUE}
 # Rolling 36 month regression of each fund on the Capped SWIX (months with benchmark data only)
@@ -247,5 +247,12 @@ fmxdat::finplot(g_disp, y.pct = T, y.pct_acc = 0.1)
 - Market dispersion measures how much the returns of individual stocks differ from the return of the market. When it is high, active managers have more opportunity to differ from the market.
 - ABC Fund did better than the average peer in normal and calmer markets, which make up most of the period.
 - In periods of very high dispersion, ABC Fund performed in line with its peers.
+
+## Summary
+
+- ABC Fund is less dependent on the market than most active managers, whose returns largely follow the market.
+- Its returns lean towards value stocks, so it offers clients a different source of returns to most of its peers.
+- It has outperformed most of its peers for most of the last decade.
+- Therefore, ABC Fund adds something different to a portfolio of typical active funds, which makes a strong case for including it in client portfolios.
 
 
