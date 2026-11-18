@@ -129,7 +129,6 @@ Size_Clean <-
 
 # Introduction \label{Introduction}
 
-
 # Data and appraoch 
 
 
@@ -255,6 +254,45 @@ fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
 
 # Active Share \label{AS}
 
+```{r active_share, fig.cap = "Active share of each size index relative to the Capped SWIX \\label{fig:as}", fig.height = 4}
+# Weights of every stock in all four indexes side by side (0 if a stock is not in that index)
+Wide_W <-
+  Size_Clean %>%
+  select(date, Tickers, Fund,Weight) %>%
+  spread(Fund, Weight, fill = 0)
 
+# Half the sum of absolute weight differences from the Capped SWIX, per index per month
+Active_Share <-
+  Wide_W %>%
+  gather(Fund, Weight, LargeCaps, MidCaps, SmallCaps) %>%
+  group_by(date, Fund) %>%
+  summarise(AS = 0.5 * sum(abs(Weight - CappedSWIX))) %>%
+  ungroup()
+
+g_as <-
+  Active_Share %>%
+  ggplot() +
+  geom_line(aes(date, AS, color = Fund), alpha = 0.8) +
+  labs(title = "Active Share Relative to the Capped SWIX",
+       subtitle = "Half the sum of absolute weight differences from the Capped SWIX",
+       x = "Year", y = "Active share") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_as, y.pct = T, y.pct_acc = 1)
+```
+
+```{r stats, results = 'asis'}
+Tab_stats <-
+  bind_rows(
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 3, NA_Check = 0.8),
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
+  ) %>%
+  # Same labels as the rest of the report
+  rename(LargeCaps = J200, MidCaps = J201, SmallCaps = J202, CappedSWIX = J433)
+
+print(xtable(Tab_stats, caption = "Risk and return statistics of the size indexes relative to the Capped SWIX \\label{tab:stats}", digits = 3),
+      floating = TRUE, table.placement = 'H', comment = FALSE,
+      caption.placement = 'bottom', include.rownames = FALSE, size = "\\footnotesize")
+```
 
 # Conclusion \label{Conc}
