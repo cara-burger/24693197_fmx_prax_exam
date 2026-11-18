@@ -3,7 +3,7 @@ Q2_Cons_Vol <- function(Stocks, Size_Clean, Window = 252){
 
     # Rolling annualised SD per stock, kept on the last trading day of each month
     Stock_SD <-
-        Q1_Rolling_Vol(Stocks, Window = Window) %>%
+        Rolling_Vol(Stocks, Window = Window) %>%
         mutate(YearMonth = format(date, "%Y%B")) %>%
         group_by(Tickers, YearMonth) %>%
         filter(date == last(date)) %>%

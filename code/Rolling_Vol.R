@@ -1,9 +1,9 @@
-Q1_Rolling_Vol <- function(df, Window = 63){
+Rolling_Vol <- function(df, Window = 63){
 
     df %>%
         # Sort by date so each window contains consecutive trading days
         arrange(date) %>%
-        # Calculate the rolling SD separately for each stock
+        # Calculate the rolling SD separately for each series
         group_by(Tickers) %>%
         # SD of the last Window daily returns, ending on each date (align = "right"),
         # multiplied by sqrt(252) to convert daily SD into an annual figure
