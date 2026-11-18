@@ -89,11 +89,12 @@ Q3_Beta_Boxplot(Rolling_Beta, Months_back = 60, Fund = "ABC_Fund")
 - ABC Fund has a lower market sensitivity than most of its peers. Therefore, a larger part of its returns comes from its own investment decisions.
 
 ```{r Q3_Factor_Data}
-# Market and style index returns in columns
-Factors <- Idx_Monthly %>%
-  filter(Tickers %in% c("J433", "STXVALJ433", "STXMOMJ433", "STXLVLJ433", "J202")) %>%
+# Market and style index returns in columns (Low Vol left out as it only starts in 2024)
+Factors <-
+  Idx_Monthly %>%
+  filter(Tickers %in% c("J433", "STXVALJ433", "STXMOMJ433", "J202")) %>%
   spread(Tickers, Ret) %>%
-  select(YM, Market = J433, Value = STXVALJ433, Momentum = STXMOMJ433, Low_Vol = STXLVLJ433, Small_Caps = J202)
+  select(YM, Market = J433, Value = STXVALJ433, Momentum = STXMOMJ433, Small_Caps = J202)
 
 # ABC Fund returns joined to the factor returns
 ABC_df <- Funds %>%
@@ -117,8 +118,8 @@ Peer_df <- Funds %>%
 ```{r Q3_Factor_Reg}
 # Returns regressed on the market and style returns
 # lm used directly as tidyfit::regress returned an error (slice_id not found)
-lm_ABC  <- lm(Returns ~ Market + Value + Momentum + Low_Vol + Small_Caps, data = ABC_df)
-lm_Peer <- lm(Returns ~ Market + Value + Momentum + Low_Vol + Small_Caps, data = Peer_df)
+lm_ABC  <- lm(Returns ~ Market + Value + Momentum + Small_Caps, data = ABC_df)
+lm_Peer <- lm(Returns ~ Market + Value + Momentum + Small_Caps, data = Peer_df)
 
 # Exposures of both in one table (intercept removed)
 Loadings <-
@@ -132,6 +133,7 @@ Loadings <-
 
 ```{r Q3_Factor_Plot}
 g_fac <- Loadings %>%
+  mutate(term = gsub("_", " ", term)) %>%
   ggplot() +
   geom_bar(aes(term, estimate, fill = Name), stat = "identity", position = "dodge") +
   geom_hline(yintercept = 0) +
@@ -145,9 +147,9 @@ g_fac
 
 ## Explanation
 
-- The average peer's returns move mostly with the overall market.
-- ABC Fund's returns depend less on the overall market and lean more towards value stocks.
-- Therefore, ABC Fund offers clients a different source of returns to most of the industry.
+- The returns of the average peer are mostly driven by the overall market.
+- ABC Fund's returns are instead driven more by momentum stocks (stocks that have performed well recently).
+- Therefore, ABC Fund offers clients a different source of returns to most of its peers.
 
 ```{r Q3_Share_Data}
 # Rolling 3 year annualised return of every fund
@@ -276,7 +278,7 @@ fmxdat::finplot(g_disp, y.pct = T, y.pct_acc = 0.1)
 ## Summary
 
 - ABC Fund is less dependent on the market than most active managers, as their returns largely follow the market.
-- ABC fund's returns lean towards value stocks, so it offers clients a different source of returns to most of its peers.
+- Its returns lean towards momentum stocks, so it offers clients a different source of returns to most of its peers.
 - ABC fund has outperformed most of its peers for most of the last decade.
     - Its advantage was largest when market dispersion was high.
 - Therefore, ABC Fund adds something different to a portfolio of typical active funds, which makes a strong case for including it in client portfolios.
