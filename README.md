@@ -44,8 +44,8 @@ gc() # garbage collection
 ```
 
     ##           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
-    ## Ncells  568806 30.4    1267292 67.7         NA   715734 38.3
-    ## Vcells 1100283  8.4    8388608 64.0      24576  2010785 15.4
+    ## Ncells  568902 30.4    1267567 67.7         NA   715734 38.3
+    ## Vcells 1101508  8.5    8388608 64.0      24576  2010785 15.4
 
 ``` r
 pacman::p_load("xts", "tbl2xts", "PerformanceAnalytics", "lubridate", "glue", "RcppRoll", "gt", "rmsfuns", "rugarch", "rmgarch")
@@ -155,11 +155,11 @@ fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
 
 ![](README_files/figure-markdown_github/Q1_A_RollVol-1.png)
 
-The rolling plot showed that local and global volatility spike at the
-same times, but it was hard to tell whether volatility had actually
-increased over time. So I summarised volatility per calendar year, which
-made it clear that volatility rises in episodes (and not steadily over
-time).
+Local and global volatility both have their largest increases at the
+same time, which suggests that local markets are affected by shocks that
+start offshore. However, it is difficult to see from this plot whether
+volatility has increased over time, so I also summarised volatility per
+calendar year.
 
 ``` r
 Annual_Vol <- Eq_Rets %>%
@@ -177,6 +177,11 @@ fmxdat::finplot(g_ann, y.pct = T, y.pct_acc = 1, x.vert = T)
 ```
 
 ![](README_files/figure-markdown_github/Q1_A_AnnVol-1.png)
+
+Local volatility has not increased over the whole sample, but is high in
+certain periods, with clear peaks in 2020, 2022 and 2026. Local
+volatility is also higher than MSCI World in almost every year and
+closer to MSCI Emerging Markets.
 
 A limitation of the rolling standard deviation is that one extreme day
 affects the whole window. I wanted to check that the pattern still holds
@@ -235,24 +240,24 @@ Garch_Out[[2]]$Coefs
     ## gamma1 2.349264e-01 3.629493e-02  6.47270479 9.626389e-11
     ## shape  6.050716e+00 6.356733e-01  9.51859446 0.000000e+00
 
-The GARCH results confirmed the idea that the big global spikes allign
-with local spikes. gamma1 is significant for both (so volatility reacts
-mainly to negative returns) and persistence is close to one, so once
-volatility increases it only settles after a long time.
+The large increases in global volatility line up with increases in local
+volatility, which suggests that local markets follow global markets
+during periods of stress. For both indices, alpha1 is close to zero
+while gamma1 is large, although the p-values of a GARCH fit should not
+be interpreted too strictly. Therefore, volatility increases mainly
+after negative returns. Persistence is close to one for both, so once
+volatility increases it takes a long time to settle.
 
 ## Part B
 
-The question says volatility is not considered when SafeCore is built,
-so my plan was to check three things. Firstly, how the fund has
-performed and held up in down markets. Secondly, where its volatility
-comes from, and lastly, what factors it is exposed to. This also follows
-the structure set out by the question/the hints given to us (as far as I
-know…).
+TThe question asks whether SafeCore navigates volatility effectively,
+what the main sources of its volatility are and what its factor
+exposures are, so I looked at each of these in turn.
 
 SafeCore only gives monthly holdings, so I first had to build its daily
 returns by applying the monthly weights to the daily stock returns
 (using `Safe_Return.portfolio`). I used the Capped SWIX as the benchmark
-throughout (as per the info given to us). I started with cumulative
+throughout (as the question specifies). I started with cumulative
 returns to get an overall picture.
 
 ``` r
@@ -322,13 +327,12 @@ Tab_stats
     ## 10 Last 3 Years Beta                     1.02    1    
     ## # ℹ 18 more rows
 
-The stats table showed higher volatility and deeper average drawdowns
-recently. When volatility rises, the losses are what matter most, so I
-also looked at downside risk measures over the full period. These
-pointed the other way (SafeCore had lower downside risk overall), so I
-plotted the difference in drawdown over time to see when this changed.
-This showed that SafeCore’s protection was mostly in earlier years and
-has faded since 2021.
+Over the last three and five years, SafeCore outperformed its benchmark,
+but with higher volatility and deeper average drawdowns. Its bear beta
+is below one, which suggests that SafeCore falls by less than its
+benchmark in a typical down month. When volatility rises, the losses are
+what matter most, so I also looked at downside risk measures over the
+full period.
 
 ``` r
 tabdownside <-
@@ -377,6 +381,12 @@ fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1)
 
 ![](README_files/figure-markdown_github/Q1_B_Downside-1.png)
 
+Over the full period, SafeCore has lower downside risk than the Capped
+SWIX on every measure. However, the drawdown plot shows that SafeCore’s
+advantage was mainly between 2015 and 2017 and in 2020. Since 2021, the
+difference has been close to zero or negative. Hence, its protection in
+down markets has weakened in recent years.
+
 Next, we were asked to investigate where SafeCore’s volatility comes
 from. A stock’s weight does not tell you how much risk it adds, because
 that also depends on how volatile it is and how it moves with the rest
@@ -420,10 +430,10 @@ fmxdat::finplot(g_risk, y.pct = T, y.pct_acc = 1)
 
 ![](README_files/figure-markdown_github/Q1_B_Risk-1.png)
 
-Resources turned out to be about a third of the fund but around two
-thirds of its volatility, which links back to Part A, since resource
-stocks depend on global commodity prices and are exposed to offshore
-shockss.
+Resources make up just over a third of the fund but are responsible for
+around two thirds of its volatility, while financials and industrials
+add less volatility than their weight. Resource stocks depend on global
+commodity prices, which makes them exposed to offshore shocks.
 
 For the factor exposures, the question asks for my own momentum and low
 volatility scores. For momentum I used the six month return excluding
@@ -500,6 +510,15 @@ fmxdat::finplot(g_cor)
 
 ![](README_files/figure-markdown_github/Q1_B_Scores-1.png)
 
+The own momentum score is closely related to the third-party momentum
+score in most months, apart from a short period in early 2021. The
+relationship between the own low volatility score and the third-party
+volatility sensitivity score is weaker. Since late 2022 the correlation
+has been positive in most months, which means the two scores mostly
+agree on which stocks are more volatile. However, the correlation is low
+and is negative in some periods, thus the two scores do not measure
+exactly the same thing.
+
 The question asks for composite scores for different strategies to
 contextualise SafeCore’s scores. I therefore turned the stock scores
 into a portfolio score by taking the weighted average score of each
@@ -548,7 +567,9 @@ fmxdat::finplot(g_comp, x.vert = T)
 
 ![](README_files/figure-markdown_github/Q1_B_Composite-1.png)
 
-SafeCore came out with a strong momentum tilt and no low volatility
+SafeCore has a strong momentum tilt, and leans slightly towards value
+and earnings quality. Its own low volatility score is slightly below
+that of its benchmark, which suggests that it has no low volatility
 tilt.
 
 ## Part C
@@ -558,7 +579,7 @@ changes with global macro factors. I used three pieces: dispersion, the
 average correlation between stocks, and a split by global uncertainty.
 
 Dispersion measures how far constituent returns spread around the index
-return, so high dispersion means more room for active managers to
+return. High dispersion means more room for active managers to
 differentiate their portfolios. I used the dispersion function with a
 rolling 60 day (three month) window. I chose the weighted measure as my
 main one because SafeCore is managed against the Capped SWIX, so the
@@ -590,6 +611,11 @@ fmxdat::finplot(g_disp, y.pct = T)
 
 ![](README_files/figure-markdown_github/Q1_C_Disp-1.png)
 
+Dispersion is not constant, but increases rapidly in certain periods
+before returning to lower levels. These periods represent the times when
+the opportunity to differentiate a portfolio from the Capped SWIX was
+greatest.
+
 Dispersion tells you how far apart returns are, but not whether stocks
 move in the same direction, so I also looked at correlations. For each
 month I built the correlation matrix of the constituents’ daily returns
@@ -614,13 +640,20 @@ fmxdat::finplot(g_avgcor)
 
 ![](README_files/figure-markdown_github/Q1_C_Cor-1.png)
 
-Finally, to link the alpha opportunity to a global macro factor, Since
-the seminar in the question focused on global policy uncertainty, I used
-the global economic policy uncertainty index. I split the months into
+The average correlation is generally low, but increases in certain
+periods, most notably in 2025 and 2026. Asset market correlations
+typically increase in periods of turmoil, as turmoil leads to asset
+market price homogeneity. A rolling correlation also keeps the noise,
+and a DCC estimate would give a cleaner, noise-reduced version of the
+comovement between stocks.
+
+Finally, to link the alpha opportunity to a global macro factor, I used
+the global economic policy uncertainty index, since the seminar in the
+question focused on global policy uncertainty. I split the months into
 high uncertainty (above the 85th percentile), low uncertainty (below the
-25th percentile) and other and compared average dispersion and
+25th percentile) and other, and compared average dispersion and
 correlation in each group. I joined everything by year-month rather than
-by date, because month-end dates can differ between datasets (pain).
+by date, because month-end dates can differ between datasets.
 
 ``` r
 EPU <- Uncertainty %>% filter(Ticker == "EPUCGLCP Index") %>%
@@ -652,33 +685,96 @@ Enviro_Tab
     ## 2 Low uncertainty       0.135       0.129
     ## 3 Other                 0.146       0.149
 
-Both dispersion and correlation were higher in high uncertainty months.
-The higher correlation fits with turmoil leading to asset prices moving
-together and since higher dispersion means a bigger alpha opportunity,
-the opportunity has been larger when global uncertainty is high
+Both dispersion and correlation are higher in high uncertainty months
+than in low uncertainty months. The higher correlation is consistent
+with turmoil leading to asset market price homogeneity. However, since
+high dispersion means that the alpha opportunity (the ability to
+differentiate portfolios) is high, this suggests that the alpha
+opportunity in the local market has increased with global policy
+uncertainty.
+
+The seminar in the question was also about oil price volatility, so I
+repeated the same split using monthly oil price volatility (Brent crude)
+instead of policy uncertainty. I used the same cut-offs (85th and 25th
+percentiles) and the same `Enviro_Split` function, so the two can be
+compared directly.
+
+``` r
+Commods <- read_rds("Questions/Question1/data/Commodities.rds")
+
+# Monthly oil price volatility (SD of daily returns within each month, annualised)
+Oil_Vol <-
+  Commods %>%
+  filter(Ticker == "CO1 Comdty") %>%
+  Q1_Level_to_Returns() %>%
+  fmxdat::YM() %>% group_by(YM) %>%
+  summarise(Oil_Vol = sd(Returns) * sqrt(252))
+
+# Dispersion and correlation in high and low oil volatility months
+Oil_Tab <-
+  df_comp_plot %>%
+  left_join(Oil_Vol, by = "YM") %>%
+  filter(!is.na(Oil_Vol), !is.na(Disp)) %>%
+  rename(Value = Oil_Vol) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "oil volatility") %>%
+  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T)) %>%
+  rename(Environment = Enviro)
+```
+
+To compare the two macro factors I put both splits in one graph.
+
+``` r
+g_env <-
+  bind_rows(Enviro_Tab %>% mutate(Factor = "Global policy uncertainty"),
+            Oil_Tab %>% mutate(Factor = "Oil price volatility")) %>%
+  # Keep only High, Low and Other as labels
+  mutate(Environment = gsub(" uncertainty| oil volatility", "", Environment)) %>%
+  mutate(Environment = factor(Environment, levels = c("Low", "Other", "High"))) %>%
+  gather(Measure, Value, Dispersion, Correlation) %>%
+  ggplot() +
+  geom_point(aes(Environment, Value, color = Measure), size = 3) +
+  geom_line(aes(Environment, Value, color = Measure, group = Measure)) +
+  facet_wrap(~Factor) +
+  labs(title = "Alpha Opportunity and Global Macro Conditions",
+       subtitle = "Average dispersion and correlation in low, other and high months",
+       caption = "Dispersion is the weighted spread of returns around the index. Correlation is the average pairwise correlation.",
+       x = "", y = "") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_env)
+```
+
+![](README_files/figure-markdown_github/Q1_C_Enviro_Plot-1.png)
+
+The pattern is the same for both macro factors. Dispersion and
+correlation both increase from low to high months, and the increase in
+correlation is largest when oil price volatility is high. The higher
+correlation is consistent with turmoil leading to asset market price
+homogeneity. However, since high dispersion means that the alpha
+opportunity (the ability to differentiate portfolios) is high, the alpha
+opportunity in the local market has increased with both global policy
+uncertainty and oil price volatility.
 
 # Conclusion
 
-Local volatility is not much higher than it used to be. It is high in
-certain periods, mostly when something happens offshore. In 2026,
-emerging markets like South Africa were hit the hardest.
+Overall, local volatility is not much higher than it was before 2020.
+Instead, it is high in certain periods, mostly when offshore shocks
+occur. In 2026, the increase in volatility was largest in emerging
+markets.
 
-SafeCore has done well on returns, but it does not hold up as well in
-bad markets as it used to. A large part of its volatility comes from
-resource stocks and it mostly holds stocks that have done well recently
-instead of less volatile ones. So it does not have much protection when
-offshore shocks happen.
+SafeCore has outperformed its benchmark, but its protection in down
+markets has weakened in recent years. A large part of its volatility
+comes from resource stocks, and it leans towards stocks that have
+performed well recently rather than less volatile stocks. Therefore, it
+has limited protection against offshore shocks.
 
-When global uncertainty is high, stock returns are more spread out, so
-there is more room for a fund manager to beat the index.
+When global policy uncertainty is high, dispersion between stocks is
+higher, which means there is more opportunity for active managers to
+outperform the index.
 
-Overall, I think SafeCore needs more protection against volatility, but
-it should still use the opportunities that come with uncertain periods.
-
-Note: I did not add Oil as an element (commodity) anywhere int his
-question and it is something I would like to return to if I have time.
-It was silly of me because it is extremely relevant to 2026 and topical
-in general…
+Overall, I believe SafeCore would benefit from more protection against
+volatility, while still making use of the opportunities that arise
+during periods of high uncertainty.
 
 # Question 2: Mid, Small and Large Cap Indices
 
@@ -777,7 +873,7 @@ The large cap index is the most concentrated over the period, although
 this decreased after 2023. It remains the most concentrated by the end
 of the period, it is just slightly above the mid cap index at the end of
 the period. The mid cap index has become a lot more concentrated since
-2020. The small cap index is the lowest concentrated over the whole
+2020. The small cap index is the least concentrated over the whole
 period. Until around 2020, the Capped SWIX lies between the large cap
 index and the smaller indices. Therefore, an investor in the large cap
 index is more exposed to the performance of a few stocks than an
@@ -1379,13 +1475,12 @@ it, and this is where ABC’s advantage over its peers was largest.
 
 A note on a mistake I made: I first only used the constituent file from
 Q1 (which only starts in 2020) and assumed that was all the dispersion
-data available (it was late at night lol). Over that short period ABC
-did not do better in high dispersion. When I realised the monthly
-weights go back much further the next morning and redid it with the full
-history, I made the necessary changes and the result reversed! The short
-period was mostly the last few years, when ABC’s performance was weaker
-(Point 3). This is still something I think the manager should keep in
-mind…
+data available. Over that short period ABC did not do better in high
+dispersion. When I realised the monthly weights go back much further the
+next morning and redid it with the full history, I made the necessary
+changes and the result reversed! The short period was mostly the last
+few years, when ABC’s performance was weaker (Point 3). This is still
+something I think the manager should keep in mind…
 
 # Question 4: Portfolio Construction
 
@@ -1401,9 +1496,8 @@ that came up was the Satrix Balanced Index Fund fact sheet (Can be found
 at this link: <https://satrix.co.za/media/93236?inline=true>). It holds
 a mix of the key local and international asset classes, and aims to grow
 capital and provide income while reducing volatility compared to an
-equity-only portfolio. I believe that is what the question is building
-towards, except it aims to build the same kind of fund but with the
-weights updated every quarter.
+equity-only portfolio. This is the kind of fund the question asks for,
+except that the weights are updated every quarter.
 
 ## Data
 
@@ -1495,8 +1589,8 @@ I put each asset’s class and region in a small table since the limits
 are set per group. Then I built one table of monthly returns. The local
 indices are daily returns. I chained them into an index first and took
 month-end returns (the same way as in Q3). The files also end their
-months on different days (trading day vs calendar day, pain again). I
-used one date per year-month so that all the assets line up.
+months on different days (trading day vs calendar day). I used one date
+per year-month so that all the assets line up.
 
 ``` r
 # Asset class and region of each asset (used for the group limits)
@@ -1786,4 +1880,5 @@ more of a starting point for discussion than a final answer.
 Note: Since the limits bind every quarter, I would have liked to also
 run the optimiser without the group limits to see what the limits
 actually cost in risk and return. I ran out of time for this, but it is
-the first thing I would add. And maybe also fix the currency mismatch…
+the first thing I would add. I would also convert the global indices to
+rand once a USD/ZAR series is available.

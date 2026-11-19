@@ -669,6 +669,7 @@ Oil_Tab <-
   group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T)) %>%
   rename(Environment = Enviro)
 ```
+
 ```{r Figure_Enviro, fig.align = 'center', fig.cap = "Dispersion and correlation by level of global policy uncertainty and oil price volatility \\label{Figure_Enviro}", fig.height = 4, fig.width = 7, fig.ext = 'png'}
 g_env <-
   bind_rows(Enviro_Tab %>% mutate(Factor = "Global policy uncertainty"),
