@@ -8,12 +8,11 @@ output:
 
 Student number: 24693197
 
-This README contains and describes all code used in the practical exam. Functions are stored in each question's `code/` folder (for example `Questions/Question1/code/`) and are sourced in the relevant section below. The write-ups (pdf, html or slides) are found in the `Questions/` folders.
+This README contains and describes all code used in the practical exam. Functions are stored in each question's `code/` folder (for example `Questions/Question1/code/`) and are sourced in the relevant section below. The write-ups (pdf or slides) are found in the `Questions/` folders.
 
 # Setup
 
-The project was created with `fmxdat::make_project()`. The question folders were created with Texevier's folder functions. The chunk below is not evaluated when knitting (`eval = F`), as re-running it would try to create the folders again.
-
+The project was created with `fmxdat::make_project()`. The question folders were created with Texevier's folder functions. 
 
 ```{r, eval = F}
 # Project root:
@@ -202,7 +201,7 @@ Tab_stats <-
     Moments_Comp(Monthly_Rets, BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
   )
 
-Format_Stats_Table(Tab_stats, BM = "J433")
+Tab_stats
 ```
 
 The stats table showed higher volatility and deeper average drawdowns recently. When volatility rises, the losses are what matter most, so I also looked at downside risk measures over the full period. These pointed the other way (SafeCore had lower downside risk overall), so I plotted the difference in drawdown over time to see when this changed. This showed that SafeCore's protection was mostly in earlier years and has faded since 2021.
@@ -687,7 +686,7 @@ Q2_Tab_stats <-
     Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
   )
 
-Format_Stats_Table(Q2_Tab_stats, BM = "J433")
+Q2_Tab_stats
 ```
 
 The small cap index has the highest annualised return and the lowest standard deviation over both periods, and therefore the highest adjusted Sharpe ratio. The large cap index behaved most like the benchmark, although with slightly more market risk. The mid cap index has the lowest return over both periods.
@@ -1198,7 +1197,7 @@ Q4_Tab_stats <-
     Moments_Comp(All_Rets %>% select(date, Tickers, Ret = Returns), BM = "Strategic balanced allocation", Yrs_LookBack = 5, NA_Check = 0.8)
   )
 
-Format_Stats_Table(Q4_Tab_stats, BM = "Strategic balanced allocation")
+Q4_Tab_stats
 ```
 
 The fund has the lowest volatility, the smallest average drawdown and the smallest modified CVaR over both periods. Its beta is below one, which means it moves less than the benchmark. However, it earned less than the benchmark over five years and its information ratio is negative over both periods. Over three years it got a similar return to the Capped SWIX with much lower volatility. This shows that the fund achieves lower risk, but at the cost of some return.
