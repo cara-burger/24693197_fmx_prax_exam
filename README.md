@@ -23,9 +23,8 @@ fmxdat::make_project()
 Texevier::create_template(directory = "Questions", template_name = "Question1",
                           build_project = TRUE, open_project = FALSE)
 
-# HTML Texevier (research report for Question 2):
-Texevier::create_template_html(directory = "Questions", template_name = "Question2",
-                               build_project = TRUE, open_project = FALSE)
+Texevier::create_template(directory = "Questions", template_name = "Question2",
+                          build_project = TRUE, open_project = FALSE)
 
 Texevier::create_template(directory = "Questions", template_name = "Question3",
                           build_project = TRUE, open_project = FALSE)
@@ -47,8 +46,8 @@ gc() # garbage collection
 ```
 
     ##           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
-    ## Ncells  567413 30.4    1263312 67.5         NA   715734 38.3
-    ## Vcells 1088660  8.4    8388608 64.0      24576  2010785 15.4
+    ## Ncells  568806 30.4    1267292 67.7         NA   715734 38.3
+    ## Vcells 1100341  8.4    8388608 64.0      24576  2010785 15.4
 
 ``` r
 pacman::p_load("xts", "tbl2xts", "PerformanceAnalytics", "lubridate", "glue", "RcppRoll", "gt", "rmsfuns", "rugarch", "rmgarch")
@@ -111,7 +110,7 @@ the same footing.
 
 For the local market I used the Capped SWIX (J433), since it is the
 broad market index and also SafeCore’s benchmark. I added the Mid Cap
-(J201) and Small Cap (J202) indexes because I wanted to see whether any
+(J201) and Small Cap (J202) indices because I wanted to see whether any
 increase was only in the large companies or across the whole market. For
 global markets I used MSCI World (developed markets) and MSCI Emerging
 Markets, since South Africa is usually grouped with emerging markets. I
@@ -141,7 +140,7 @@ square root of 252 as is standard practice. I split the plot into local
 and global panels so the two groups are easy to compare.
 
 ``` r
-Roll_Vol <- Eq_Rets %>% Q1_Rolling_Vol(Window = 63)
+Roll_Vol <- Eq_Rets %>% Rolling_Vol(Window = 63)
 
 g_roll <- Roll_Vol %>%
   mutate(Region = ifelse(Tickers %in% c("J433", "J201", "J202"), "Local", "Global")) %>%
@@ -150,7 +149,7 @@ g_roll <- Roll_Vol %>%
   facet_wrap(~Region, ncol = 1) +
   labs(title = "Rolling Volatility: Local vs Global Equity",
        subtitle = "63 day rolling standard deviation, annualised",
-       x = "Year", y = "Annualised SD") +
+       x = "", y = "Annualised SD") +
   fmxdat::theme_fmx()
 
 fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
@@ -187,7 +186,7 @@ once the noise is removed, so I fitted a GARCH model to the Capped SWIX
 and MSCI World. I used a GJR-GARCH rather than a standard GARCH, because
 the standard model treats positive and negative shocks the same, while
 in stock markets negative returns tend to raise volatility by more. I
-fitted the two indexes separately using `group_split` and `map`, and
+fitted the two indices separately using `group_split` and `map`, and
 cached the chunk since it takes a while to run.
 
 ``` r
@@ -310,23 +309,23 @@ Tab_stats <-
 Format_Stats_Table(Tab_stats, BM = "J433")
 ```
 
-<div id="gmhxcfxddr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#gmhxcfxddr table {
+<div id="jbikyhytur" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jbikyhytur table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#gmhxcfxddr thead, #gmhxcfxddr tbody, #gmhxcfxddr tfoot, #gmhxcfxddr tr, #gmhxcfxddr td, #gmhxcfxddr th {
+#jbikyhytur thead, #jbikyhytur tbody, #jbikyhytur tfoot, #jbikyhytur tr, #jbikyhytur td, #jbikyhytur th {
   border-style: none;
 }
 
-#gmhxcfxddr p {
+#jbikyhytur p {
   margin: 0;
   padding: 0;
 }
 
-#gmhxcfxddr .gt_table {
+#jbikyhytur .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -352,12 +351,12 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-left-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_caption {
+#jbikyhytur .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#gmhxcfxddr .gt_title {
+#jbikyhytur .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -369,7 +368,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-bottom-width: 0;
 }
 
-#gmhxcfxddr .gt_subtitle {
+#jbikyhytur .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -381,7 +380,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-top-width: 0;
 }
 
-#gmhxcfxddr .gt_heading {
+#jbikyhytur .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -393,13 +392,13 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-right-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_bottom_border {
+#jbikyhytur .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_col_headings {
+#jbikyhytur .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -414,7 +413,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-right-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_col_heading {
+#jbikyhytur .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -434,7 +433,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   overflow-x: hidden;
 }
 
-#gmhxcfxddr .gt_column_spanner_outer {
+#jbikyhytur .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -446,15 +445,15 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 4px;
 }
 
-#gmhxcfxddr .gt_column_spanner_outer:first-child {
+#jbikyhytur .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#gmhxcfxddr .gt_column_spanner_outer:last-child {
+#jbikyhytur .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#gmhxcfxddr .gt_column_spanner {
+#jbikyhytur .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -466,11 +465,11 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   width: 100%;
 }
 
-#gmhxcfxddr .gt_spanner_row {
+#jbikyhytur .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#gmhxcfxddr .gt_group_heading {
+#jbikyhytur .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -496,7 +495,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   text-align: left;
 }
 
-#gmhxcfxddr .gt_empty_group_heading {
+#jbikyhytur .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -511,15 +510,15 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   vertical-align: middle;
 }
 
-#gmhxcfxddr .gt_from_md > :first-child {
+#jbikyhytur .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#gmhxcfxddr .gt_from_md > :last-child {
+#jbikyhytur .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#gmhxcfxddr .gt_row {
+#jbikyhytur .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -538,7 +537,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   overflow-x: hidden;
 }
 
-#gmhxcfxddr .gt_stub {
+#jbikyhytur .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -551,7 +550,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 5px;
 }
 
-#gmhxcfxddr .gt_stub_row_group {
+#jbikyhytur .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -565,15 +564,15 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   vertical-align: top;
 }
 
-#gmhxcfxddr .gt_row_group_first td {
+#jbikyhytur .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#gmhxcfxddr .gt_row_group_first th {
+#jbikyhytur .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#gmhxcfxddr .gt_summary_row {
+#jbikyhytur .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -583,16 +582,16 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 5px;
 }
 
-#gmhxcfxddr .gt_first_summary_row {
+#jbikyhytur .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_first_summary_row.thick {
+#jbikyhytur .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#gmhxcfxddr .gt_last_summary_row {
+#jbikyhytur .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -602,7 +601,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-bottom-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_grand_summary_row {
+#jbikyhytur .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -612,7 +611,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 5px;
 }
 
-#gmhxcfxddr .gt_first_grand_summary_row {
+#jbikyhytur .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -622,7 +621,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-top-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_last_grand_summary_row_top {
+#jbikyhytur .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -632,11 +631,11 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-bottom-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_striped {
+#jbikyhytur .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#gmhxcfxddr .gt_table_body {
+#jbikyhytur .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -645,7 +644,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-bottom-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_footnotes {
+#jbikyhytur .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -659,7 +658,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-right-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_footnote {
+#jbikyhytur .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -668,7 +667,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 5px;
 }
 
-#gmhxcfxddr .gt_sourcenotes {
+#jbikyhytur .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -682,7 +681,7 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   border-right-color: #D3D3D3;
 }
 
-#gmhxcfxddr .gt_sourcenote {
+#jbikyhytur .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -690,72 +689,72 @@ Format_Stats_Table(Tab_stats, BM = "J433")
   padding-right: 5px;
 }
 
-#gmhxcfxddr .gt_left {
+#jbikyhytur .gt_left {
   text-align: left;
 }
 
-#gmhxcfxddr .gt_center {
+#jbikyhytur .gt_center {
   text-align: center;
 }
 
-#gmhxcfxddr .gt_right {
+#jbikyhytur .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#gmhxcfxddr .gt_font_normal {
+#jbikyhytur .gt_font_normal {
   font-weight: normal;
 }
 
-#gmhxcfxddr .gt_font_bold {
+#jbikyhytur .gt_font_bold {
   font-weight: bold;
 }
 
-#gmhxcfxddr .gt_font_italic {
+#jbikyhytur .gt_font_italic {
   font-style: italic;
 }
 
-#gmhxcfxddr .gt_super {
+#jbikyhytur .gt_super {
   font-size: 65%;
 }
 
-#gmhxcfxddr .gt_footnote_marks {
+#jbikyhytur .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#gmhxcfxddr .gt_asterisk {
+#jbikyhytur .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#gmhxcfxddr .gt_indent_1 {
+#jbikyhytur .gt_indent_1 {
   text-indent: 5px;
 }
 
-#gmhxcfxddr .gt_indent_2 {
+#jbikyhytur .gt_indent_2 {
   text-indent: 10px;
 }
 
-#gmhxcfxddr .gt_indent_3 {
+#jbikyhytur .gt_indent_3 {
   text-indent: 15px;
 }
 
-#gmhxcfxddr .gt_indent_4 {
+#jbikyhytur .gt_indent_4 {
   text-indent: 20px;
 }
 
-#gmhxcfxddr .gt_indent_5 {
+#jbikyhytur .gt_indent_5 {
   text-indent: 25px;
 }
 
-#gmhxcfxddr .katex-display {
+#jbikyhytur .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#gmhxcfxddr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jbikyhytur div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -985,7 +984,7 @@ the third-party ones each month.
 ``` r
 Own_LowVol <-
   Stocks %>%
-  Q1_Rolling_Vol(Window = 126) %>%
+  Rolling_Vol(Window = 126) %>%
   mutate(YM = format(date, "%Y%B")) %>%
   group_by(Tickers, YM) %>%
   filter(date == last(date)) %>%
@@ -1021,14 +1020,19 @@ Scores <-
   inner_join(Factor_Scores %>% mutate(YM = format(date, "%Y%B")) %>% spread(Factor, Factor_Value),
              by = c("YM", "Tickers"))
 
-g_cor <-
+# Correlation across stocks each month between own and third-party scores
+# Volatility Sensitivity is reversed so that a higher value means a less volatile stock
+Score_Cor <-
   Scores %>%
   group_by(YM) %>%
   summarise(date = max(date),
             Momentum = cor(Own_Momentum, Momentum, use = "complete.obs"),
-            `Low Volatility` = cor(Own_LowVol, `Volatility Sensitivity`, use = "complete.obs")) %>%
+            `Low Volatility` = cor(Own_LowVol, -`Volatility Sensitivity`, use = "complete.obs")) %>%
   select(-YM) %>%
-  gather(Factor, Correlation, -date) %>%
+  gather(Factor, Correlation, -date)
+
+g_cor <-
+  Score_Cor %>%
   ggplot() +
   geom_line(aes(date, Correlation, color = Factor)) +
   geom_hline(yintercept = 0) +
@@ -1042,12 +1046,10 @@ fmxdat::finplot(g_cor)
 ![](README_files/figure-markdown_github/Q1_B_Scores-1.png)
 
 The question asks for composite scores for different strategies to
-contextualise SafeCore’s scores, so I turned them into a portfolio score
-by taking the weighted average score of each portfolio’s holdings in the
-latest month. To give SafeCore’s scores some context, I did the same for
-the Capped SWIX and the strategy indexes in the constituent data. This
-also worked as a check because each strategy index should score highest
-on its own factor, and the Capped SWIX should be close to zero.
+contextualise SafeCore’s scores. I therefore turned the stock scores
+into a portfolio score by taking the weighted average score of each
+portfolio’s holdings in the latest month, for SafeCore, the Capped SWIX
+and the strategy indices in the constituent data.
 
 ``` r
 Last_Date <- max(SafeCore$date)
@@ -1178,17 +1180,18 @@ df_comp_plot <-
   ) %>%
   left_join(EPU, by = "YM")
 
-df_comp_plot %>% filter(!is.na(EPU), !is.na(Disp)) %>%
-  mutate( hiEPU = quantile(EPU, 0.85),
-          loEPU = quantile(EPU, 0.25)) %>%
-  mutate(Enviro = ifelse(EPU > hiEPU, "High uncertainty",
-                         ifelse(EPU < loEPU, "Low uncertainty",
-                                "Other"))) %>%
-  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T))
+Enviro_Tab <-
+  df_comp_plot %>% filter(!is.na(EPU), !is.na(Disp)) %>%
+  rename(Value = EPU) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "uncertainty") %>%
+  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T)) %>%
+  rename(Environment = Enviro)
+
+Enviro_Tab
 ```
 
     ## # A tibble: 3 × 3
-    ##   Enviro           Dispersion Correlation
+    ##   Environment      Dispersion Correlation
     ##   <chr>                 <dbl>       <dbl>
     ## 1 High uncertainty      0.164       0.173
     ## 2 Low uncertainty       0.135       0.129
@@ -1224,21 +1227,2280 @@ in general…
 
 # Question 2: Mid, Small and Large Cap Indices
 
+Note: I did this question last so that is why so many functions from
+other questions become shared functions
+
+*Write-up* (Report) can be found at `Questions/Question2/Question2.pdf`
+(more detailed interpretations/explanations)
+
+I initially kpet the html texevier folder for Question 2 and then only
+later realised the question requires a pdf output, so I recreated the
+folder with the PDF template to match Q1 and Q4.
+
 ``` r
 # Functions for this question:
 list.files('Questions/Question2/code/', full.names = T, recursive = T) %>% .[grepl('.R', .)] %>% as.list() %>% walk(~source(.))
 ```
 
-# Question 3: Portfolio Return Comparison
+## Data
+
+The weights in the constituent file don’t always add up to one, so I
+rescaled them in each index and month first. I only kept the four index
+return series I needed. I gave a few objects a `Q2_` name here so they
+don’t overwrite the Q1 objects with the same names.
 
 ``` r
-# Functions for this question:
+Size_Idx <- read_rds("Questions/Question2/data/Monthly_Index_Constituents.rds")
+
+Size_Clean <-
+  Size_Idx %>%
+  group_by(Fund, date) %>%
+  mutate(Weight = Weight / sum(Weight)) %>%
+  ungroup()
+
+Q2_Idx_Daily <-
+  read_rds("Questions/Question2/data/Index_Returns_Daily.rds") %>%
+  filter(Tickers %in% c("J200", "J201", "J202", "J433"))
+
+Q2_Stocks <- read_rds("Questions/Question2/data/Stock_Returns_Daily.rds")
+```
+
+## Sector exposure and concentration
+
+The question asks about each index’s sector exposure, so I plotted the
+weights per sector for each index over time. I used a stacked bar so it
+is easy to see how the split between sectors changes.
+
+``` r
+g_sector <-
+  Size_Clean %>%
+  ggplot() +
+  geom_bar(aes(date, Weight, fill = Sector), stat = "identity", width = 31) +
+  facet_wrap(~Fund) +
+  labs(title = "Sector Exposure by Index", subtitle = "Monthly constituent weights grouped by sector",
+       x = "Year", y = "Sector weight") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_sector, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q2_sector-1.png)
+
+Each index has quite a different sector mix. The large cap index was
+very heavy in resources at the start, the mid cap index used to be
+mostly industrials, and the small cap index has by far the most
+property. From the graph it is evident that each index poses a different
+sector risk.
+
+For stock concentration I used the combined weight of the ten largest
+stocks in each index. I chose ten because the large cap index only has
+about 40 stocks.Because of this, a larger number (like 40) would show
+almost 100% the whole time and you wouldn’t see any differences.
+
+``` r
+Conc <-
+  Size_Clean %>%
+  group_by(Fund, date) %>%
+  arrange(desc(Weight)) %>%
+  top_n(10, Weight) %>%
+  summarise(Top10 = sum(Weight))
+
+g_conc <-
+  Conc %>%
+  ggplot() +
+  geom_line(aes(date, Top10, color = Fund), alpha = 0.8) +
+  labs(title = "Top 10 Stock Concentration", subtitle = "Combined weight of the ten largest stocks in each index",
+       x = "Year", y = "Weight of top 10 stocks") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_conc, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q2_conc-1.png)
+
+The large cap index is the most concentrated over the period, although
+this decreased after 2023. It remains the most concentrated by the end
+of the period, it is just slightly above the mid cap index at the end of
+the period. The mid cap index has become a lot more concentrated since
+2020. The small cap index is the lowest concentrated over the whole
+period. Until around 2020, the Capped SWIX lies between the large cap
+index and the smaller indices. Therefore, an investor in the large cap
+index is more exposed to the performance of a few stocks than an
+investor in the small cap index.
+
+## Volatility
+
+The question asks about the volatility of the constituents, so I worked
+out a rolling one year SD for each stock and took the weighted average
+for each index at each month end. I moved my rolling vol function from
+Q1 into the root `code/` folder (`Rolling_Vol`), since Q1 and Q2 both
+use it.
+
+``` r
+Cons_Vol <- Q2_Cons_Vol(Q2_Stocks, Size_Clean, Window = 252)
+
+g_consvol <-
+  Cons_Vol %>%
+  ggplot() +
+  geom_line(aes(date, RollSD, color = Fund), alpha = 0.8) +
+  labs(title = "Realised Volatility of Index Constituents",
+       subtitle = "Rolling 1 year standard deviation, annualised (weighted by index weight)",
+       x = "Year", y = "Annualised SD") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_consvol, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q2_consvol-1.png)
+
+The volatility of all four indices increased in 2020 and stayed high for
+a year (as the 2020 returns remain in the one year window)). The small
+cap constituents are the most volatile for most of 2016 to 2022. The
+large cap index and the Capped SWIX follow almost the same path. From
+2022 to 2024 the mid cap constituents are the least volatile. From 2025
+the small cap constituents are the least volatile.
+
+In class it was mentioned that in SA large cap stocks often look about
+as volatile as small caps (during the research paper topic discussions).
+Using a chart of the median peak-to-trough fall of stocks within a year,
+I wanted to see if the data shows the same.
+
+``` r
+Stock_DD <-
+  Q2_Stocks %>%
+  filter(!is.na(Returns)) %>%
+  arrange(date) %>%
+  mutate(Year = format(date, "%Y")) %>%
+  group_by(Tickers, Year) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  mutate(Drawdown = CP / cummax(CP) - 1) %>%
+  summarise(Max_DD = min(Drawdown))
+
+Year_DD <-
+  Size_Clean %>%
+  filter(format(date, "%m") == "12", date >= ymd(20151201)) %>%
+  mutate(Year = format(date, "%Y")) %>%
+  left_join(Stock_DD, by = c("Tickers", "Year")) %>%
+  group_by(Fund, Year) %>%
+  summarise(Median_DD = median(Max_DD, na.rm = T))
+
+g_dd <-
+  Year_DD %>%
+  ggplot() +
+  geom_bar(aes(Year, Median_DD, fill = Fund), stat = "identity", position = "dodge") +
+  labs(title = "Peak-to-Trough Falls of Index Constituents",
+       subtitle = "Median of each stock's largest fall from its peak within the year",
+       x = "Year", y = "Largest fall from peak") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1, x.vert = T)
+```
+
+![](README_files/figure-markdown_github/Q2_yeardd-1.png)
+
+It does! The typical stock falls by about the same amount in every size
+index, with 2020 being the worst year for all of them. This suggests
+that the large cap index is about as risky as the small cap index.
+
+For the stratification I split the months into high volatility, low
+volatility and other, based on the Capped SWIX’s own monthly volatility.
+I used the same cut-offs as in Q1 and Q3 (85th and 25th percentiles) so
+the questions are consistent. This time I put the split into a function
+in the root `code/` folder (`Enviro_Split`) so it can be reused.
+
+``` r
+Idxs <-
+  Q2_Idx_Daily %>%
+  mutate(Fund = ifelse(Tickers == "J200", "LargeCaps",
+                ifelse(Tickers == "J201", "MidCaps",
+                ifelse(Tickers == "J202", "SmallCaps", "CappedSWIX")))) %>%
+  select(date, Tickers = Fund, Return = Returns) %>%
+  filter(!is.na(Return)) %>%
+  mutate(YM = format(date, "%Y%B"))
+
+SWIX_Vol <-
+  Idxs %>%
+  filter(Tickers == "CappedSWIX") %>%
+  group_by(YM) %>% summarise(Value = sd(Return) * sqrt(252)) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "volatility") %>%
+  select(YM, Enviro)
+
+left_join(Idxs, SWIX_Vol, by = "YM") %>%
+  group_by(Enviro, Tickers) %>%
+  summarise(SD = sd(Return) * sqrt(252), Ret = mean(Return) * 252) %>%
+  ungroup()
+```
+
+    ## # A tibble: 12 × 4
+    ##    Enviro          Tickers        SD     Ret
+    ##    <chr>           <chr>       <dbl>   <dbl>
+    ##  1 High volatility CappedSWIX 0.309  -0.0671
+    ##  2 High volatility LargeCaps  0.307  -0.0298
+    ##  3 High volatility MidCaps    0.293  -0.0807
+    ##  4 High volatility SmallCaps  0.254  -0.0915
+    ##  5 Low volatility  CappedSWIX 0.101   0.157 
+    ##  6 Low volatility  LargeCaps  0.114   0.211 
+    ##  7 Low volatility  MidCaps    0.114   0.0946
+    ##  8 Low volatility  SmallCaps  0.0816  0.107 
+    ##  9 Other           CappedSWIX 0.159   0.116 
+    ## 10 Other           LargeCaps  0.173   0.123 
+    ## 11 Other           MidCaps    0.154   0.123 
+    ## 12 Other           SmallCaps  0.118   0.158
+
+All four indices have a negative average return in high volatility
+months, and the small cap index falls the most. However, the small cap
+index has the lowest standard deviation in every group. This is despite
+its constituents being about as volatile as those of the large cap
+index.
+
+The small cap index had the lowest SD in every group, even though its
+stocks are just as volatile as the large cap stocks. I wanted to find
+out why. I first thought about fitting a GARCH model to each index (the
+question said we may use volatility models), but that would mostly
+repeat the stats table and what I did in Q1. I hadn’t used PCA anywhere
+yet, so I tried that instead. I used log returns. The rest of Q2 uses
+simple returns because those get chained into monthly and rolling
+returns. The idea was to check whether small cap stocks move together
+less, which would explain the lower index volatility.
+
+``` r
+PCA <-
+  Size_Clean %>%
+  filter(format(date, "%m") == "12", date >= ymd(20151201)) %>%
+  group_split(Fund, date) %>%
+  map_df(~Q2_PCA(., Q2_Stocks))
+
+g_pca <-
+  PCA %>%
+  ggplot() +
+  geom_bar(aes(Year, Prop, fill = Fund), stat = "identity", position = "dodge") +
+  labs(title = "Eigenvalue Proportions of Index Constituents",
+       subtitle = "Proportion of variation explained by the first principal component, per calendar year",
+       x = "Year", y = "Proportion of variation (PC 1)") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_pca, y.pct = T, y.pct_acc = 1, x.vert = T)
+```
+
+![](README_files/figure-markdown_github/Q2_pca-1.png)
+
+They do! The large cap index has the highest proportion in every year
+and the small cap index has the lowest. This suggests that small cap
+stocks are affected more by idiosyncratic information. Although the
+small cap constituents are volatile, they move together less. Therefore,
+their movements partly offset each other, and the small cap index has
+the lowest volatility.
+
+## Returns
+
+For returns I used rolling 3 year returns instead of cumulative returns,
+because a good or bad start can skew a cumulative return plot for the
+whole period. I also put the daily to monthly conversion I used in Q1
+and Q3 into a shared function (`Daily_to_Monthly`).
+
+``` r
+Idx_Monthly <-
+  Q2_Idx_Daily %>%
+  Daily_to_Monthly() %>%
+  mutate(Fund = ifelse(Tickers == "J200", "LargeCaps",
+                ifelse(Tickers == "J201", "MidCaps",
+                ifelse(Tickers == "J202", "SmallCaps", "CappedSWIX"))))
+
+g_roll <-
+  Idx_Monthly %>%
+  group_by(Fund) %>%
+  mutate(RollRets = RcppRoll::roll_prod(1 + Ret, 36, fill = NA, align = "right") ^ (12/36) - 1) %>%
+  group_by(date) %>% filter(any(!is.na(RollRets))) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_line(aes(date, RollRets, color = Fund), alpha = 0.8) +
+  labs(title = "Rolling 3 Year Annualised Returns", subtitle = "Size indices compared to the Capped SWIX",
+       x = "Year", y = "Rolling 3 year return (Ann.)") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q2_rollrets-1.png)
+
+The small cap index has the widest range of rolling returns. It had the
+lowest rolling returns around 2020 and the highest from 2022 to 2024. By
+the end of the sample, all four indices have similar rolling returns.
+
+I then used the same stats table as in Q1 (Capped SWIX as the benchmark)
+to compare the risk and return profiles over the last 3 and 5 years.
+
+``` r
+Q2_Tab_stats <-
+  bind_rows(
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 3, NA_Check = 0.8),
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
+  )
+
+Format_Stats_Table(Q2_Tab_stats, BM = "J433")
+```
+
+<div id="cmnmbkkuoi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#cmnmbkkuoi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#cmnmbkkuoi thead, #cmnmbkkuoi tbody, #cmnmbkkuoi tfoot, #cmnmbkkuoi tr, #cmnmbkkuoi td, #cmnmbkkuoi th {
+  border-style: none;
+}
+
+#cmnmbkkuoi p {
+  margin: 0;
+  padding: 0;
+}
+
+#cmnmbkkuoi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#cmnmbkkuoi .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#cmnmbkkuoi .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#cmnmbkkuoi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#cmnmbkkuoi .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#cmnmbkkuoi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#cmnmbkkuoi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#cmnmbkkuoi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#cmnmbkkuoi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#cmnmbkkuoi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#cmnmbkkuoi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#cmnmbkkuoi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#cmnmbkkuoi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#cmnmbkkuoi .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#cmnmbkkuoi .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cmnmbkkuoi .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#cmnmbkkuoi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#cmnmbkkuoi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#cmnmbkkuoi .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cmnmbkkuoi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#cmnmbkkuoi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cmnmbkkuoi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#cmnmbkkuoi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cmnmbkkuoi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cmnmbkkuoi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cmnmbkkuoi .gt_left {
+  text-align: left;
+}
+
+#cmnmbkkuoi .gt_center {
+  text-align: center;
+}
+
+#cmnmbkkuoi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#cmnmbkkuoi .gt_font_normal {
+  font-weight: normal;
+}
+
+#cmnmbkkuoi .gt_font_bold {
+  font-weight: bold;
+}
+
+#cmnmbkkuoi .gt_font_italic {
+  font-style: italic;
+}
+
+#cmnmbkkuoi .gt_super {
+  font-size: 65%;
+}
+
+#cmnmbkkuoi .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#cmnmbkkuoi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#cmnmbkkuoi .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#cmnmbkkuoi .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#cmnmbkkuoi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#cmnmbkkuoi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#cmnmbkkuoi .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#cmnmbkkuoi .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#cmnmbkkuoi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <caption>Fund Moments Comparison</caption>
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>Index Statistics: Relative to J433</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Info">Info</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="J433">J433</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="J200">J200</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="J201">J201</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="J202">J202</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="5" class="gt_group_heading" style="background-color: rgba(69,69,69,0.15); font-size: large; text-align: left; font-weight: bold;" scope="colgroup" id="Last-3-Years">Last 3 Years</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Last-3-Years  Info" class="gt_row gt_left">Cum Returns</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">69.6%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">67.8%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">55.4%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">84.0%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Returns (Ann.)</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">19.3%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">18.8%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">15.8%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">22.5%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Returns Excess (Ann.)</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">0.0%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">−0.4%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">−2.9%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">2.7%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">SD (Ann.)</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">12.8%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">13.9%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">13.6%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">11.0%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Adj. Sharpe Ratio</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">0.853</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">0.946</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.855</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">1.023</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Pain Index</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">0.026</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">0.028</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.036</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.017</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Avg DD</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">4.7%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">6.7%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">6.3%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">5.1%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Tracking Error</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">0.0%</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">2.2%</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">7.6%</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">11.8%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Information Ratio</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">-</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">-0.200</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">-0.452</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.277</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">1.074</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.887</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.448</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta Bull</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">1.126</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.561</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.194</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta Bear</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">1.060</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.773</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.685</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Up-Down Ratio</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">0.000</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">0.600</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">0.440</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">0.400</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Modified CVaR</td>
+<td headers="Last-3-Years  J433" class="gt_row gt_right">-0.083</td>
+<td headers="Last-3-Years  J200" class="gt_row gt_right">-0.086</td>
+<td headers="Last-3-Years  J201" class="gt_row gt_right">-0.089</td>
+<td headers="Last-3-Years  J202" class="gt_row gt_right">-0.061</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="5" class="gt_group_heading" style="background-color: rgba(69,69,69,0.15); font-size: large; text-align: left; font-weight: bold;" scope="colgroup" id="Last-5-Years">Last 5 Years</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Last-5-Years  Info" class="gt_row gt_left">Cum Returns</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">91.9%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">107.9%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">63.5%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">120.4%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Returns (Ann.)</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">13.9%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">15.8%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">10.3%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">17.1%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Returns Excess (Ann.)</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">0.0%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">1.6%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">−3.2%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">2.8%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">SD (Ann.)</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">13.7%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">15.4%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">14.2%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">11.3%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Adj. Sharpe Ratio</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">0.918</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">0.986</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.694</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">1.151</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Pain Index</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">0.032</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">0.037</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.040</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.016</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Avg DD</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">6.9%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">7.5%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">6.1%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">4.4%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Tracking Error</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">0.0%</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">4.4%</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">7.9%</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">11.5%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Information Ratio</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">-</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">0.420</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">-0.455</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.279</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">1.085</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.872</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.490</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta Bull</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">1.244</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.527</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.253</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta Bear</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">1.019</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.900</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.789</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Up-Down Ratio</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">0.000</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">0.590</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">0.436</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">0.359</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Modified CVaR</td>
+<td headers="Last-5-Years  J433" class="gt_row gt_right">-0.079</td>
+<td headers="Last-5-Years  J200" class="gt_row gt_right">-0.084</td>
+<td headers="Last-5-Years  J201" class="gt_row gt_right">-0.088</td>
+<td headers="Last-5-Years  J202" class="gt_row gt_right">-0.063</td></tr>
+  </tbody>
+  
+</table>
+</div>
+
+The small cap index has the highest annualised return and the lowest
+standard deviation over both periods, and therefore the highest adjusted
+Sharpe ratio. The large cap index behaved most like the benchmark,
+although with slightly more market risk. The mid cap index has the
+lowest return over both periods.
+
+## Active share
+
+Active share wasn’t in the course material, so I used the standard
+formula (half the sum of the absolute differences between the index
+weights and the Capped SWIX weights). A stock that is only in one of the
+two gets a weight of 0 in the other.
+
+``` r
+Active_Share <-
+  Size_Clean %>%
+  select(date, Tickers, Fund, Weight) %>%
+  spread(Fund, Weight, fill = 0) %>%
+  gather(Fund, Weight, LargeCaps, MidCaps, SmallCaps) %>%
+  group_by(date, Fund) %>%
+  summarise(AS = 0.5 * sum(abs(Weight - CappedSWIX))) %>%
+  ungroup()
+
+g_as <-
+  Active_Share %>%
+  ggplot() +
+  geom_line(aes(date, AS, color = Fund), alpha = 0.8) +
+  labs(title = "Active Share Relative to the Capped SWIX",
+       subtitle = "Half the sum of absolute weight differences from the Capped SWIX",
+       x = "Year", y = "Active share") +
+  fmxdat::theme_fmx() + fmxdat::fmx_cols()
+
+fmxdat::finplot(g_as, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q2_as-1.png)
+
+The large cap index has the lowest active share, which means it holds
+largely the same stocks as the Capped SWIX at similar weights. The small
+cap index has an active share close to one throughout. Therefore, the
+small cap index gives an investor the most different set of stocks from
+the benchmark.
+
+## Summary
+
+Each index carries a different sector exposure. The large cap index is
+the most concentrated, its stocks show the most comovement and it is the
+most similar to the Capped SWIX, with a beta above one. The mid cap
+index has had the lowest returns in recent years. Within each year, the
+typical small cap stock falls about as much from its peak as the typical
+large cap stock. However, small cap stocks move together the least.
+Therefore, the small cap index has the lowest volatility and the highest
+risk-adjusted return over the last three and five years. It is also the
+most different from the benchmark, but it had the largest losses in high
+volatility months. Overall, the results do not support the view that
+small caps are the most volatile part of the local market.
+
+# Question 3: Portfolio Return Comparison
+
+The slides can be found in `Questions/Question3/` (knitted with
+`powerpoint_presentation`).
+
+For this question I made PowerPoint slides comparing ABC Fund to its
+peers, using returns only. The slides are in `Questions/Question3/`. I
+worked through the manager’s suggested points in order.
+
+``` r
+# Question 3 functions
 list.files('Questions/Question3/code/', full.names = T, recursive = T) %>% .[grepl('.R', .)] %>% as.list() %>% walk(~source(.))
 ```
 
+``` r
+Active_Manager_Peers <- read_rds("Questions/Question3/data/Active_Managers.rds")
+ABC_Fund <- read_rds("Questions/Question3/data/ABC_Fund.rds")
+Idx_Daily <- read_rds("Questions/Question3/data/Index_Returns_Daily.rds")
+Monthly_Cons <- read_rds("Questions/Question3/data/Monthly_Index_Constituents.rds")
+Stocks <- read_rds("Questions/Question3/data/Stock_Returns_Daily.rds")
+```
+
+The fund returns are monthly and the index returns are daily, so I
+converted the indices to monthly returns (same as for SafeCore in Q1). I
+joined on a year-month label because the month-end dates differ between
+funds and indices.
+
+``` r
+# Monthly returns for the Capped SWIX and the style indices
+# Chain daily returns into an index, keep the last trading day of each month and take month-on-month returns
+Idx_Monthly <-
+  Idx_Daily %>%
+  arrange(date) %>%
+  group_by(Tickers) %>%
+  mutate(Index = cumprod(1 + Returns)) %>%
+  mutate(YM = format(date, "%Y%B")) %>%
+  group_by(Tickers, YM) %>%
+  filter(date == last(date)) %>%
+  group_by(Tickers) %>%
+  mutate(Ret = Index / lag(Index) - 1) %>%
+  ungroup() %>%
+  filter(!is.na(Ret)) %>%
+  select(YM, Tickers, Ret)
+
+# Benchmark (Capped SWIX) monthly returns
+BM_Monthly <- Idx_Monthly %>% filter(Tickers == "J433") %>% select(YM, BM_Monthly = Ret)
+
+# Peers and ABC Fund in one data frame, with the same month label for joining
+Funds <-
+  bind_rows(Active_Manager_Peers, ABC_Fund) %>%
+  arrange(date) %>%
+  mutate(YM = format(date, "%Y%B"))
+```
+
+## Point 1: Rolling 3 year beta
+
+I used the rolling beta function from the mapping prac, changing only
+the column name and joining on `YM`. The benchmark only starts in 2015,
+so I dropped earlier fund months.
+
+``` r
+# Rolling 36 month regression of each fund on the Capped SWIX (months with benchmark data only)
+Manager_list <- Funds %>% filter(YM %in% BM_Monthly$YM) %>% group_split(Name)
+
+Rolling_Beta <-
+  Manager_list %>%
+  map_df(~Q3_Roll_Regression(., BM_Monthly, Nsel = 36, Silent = TRUE)) %>%
+  arrange(date)
+```
+
+The plot is a boxplot and jitter (with ABC added as a red dot). I
+averaged over 5 years instead of 10 ( the betas only start in 2018). I
+also used plain labels so the manager can read it.
+
+``` r
+Q3_Beta_Boxplot(Rolling_Beta, Months_back = 60, Fund = "ABC_Fund")
+```
+
+![](README_files/figure-markdown_github/Q3_Beta_Plot-1.png)
+
+Most active managers sit close to the market line, so their returns
+mostly follow the market. ABC sits below almost all of its peers.
+
+## Point 2: What drives ABC Fund’s returns
+
+I wanted to use the TidyFit package for this, but it didn’t work out as
+I had hoped. I then pivoted to regressing returns on the Capped SWIX
+(market) and the style indices. I compared ABC to the average peer to
+keep the slide simple.
+
+``` r
+# Market and style index returns in columns (Low Vol left out as it only starts in 2024)
+Factors <-
+  Idx_Monthly %>%
+  filter(Tickers %in% c("J433", "STXVALJ433", "STXMOMJ433", "J202")) %>%
+  spread(Tickers, Ret) %>%
+  select(YM, Market = J433, Value = STXVALJ433, Momentum = STXMOMJ433, Small_Caps = J202)
+
+# ABC Fund returns joined to the factor returns
+ABC_df <- Funds %>%
+  filter(Name == "ABC_Fund") %>%
+  select(YM, Returns) %>%
+  left_join(Factors, by = "YM") %>%
+  drop_na()
+
+# Average peer return each month joined to the factor returns
+Peer_df <- Funds %>%
+  filter(Name != "ABC_Fund") %>%
+  group_by(YM) %>%
+  # Average return across all peers in each month (peers without a return that month are skipped)
+  summarise(Returns = mean(Returns, na.rm = T)) %>%
+  left_join(Factors, by = "YM") %>%
+  drop_na()
+```
+
+`tidyfit::regress` gave a package error, so I used `lm` directly (which
+is what `m("lm")` runs).
+
+``` r
+# lm used directly as tidyfit::regress returned an error (slice_id not found)
+lm_ABC  <- lm(Returns ~ Market + Value + Momentum + Small_Caps, data = ABC_df)
+lm_Peer <- lm(Returns ~ Market + Value + Momentum + Small_Caps, data = Peer_df)
+
+# Exposures of both in one table
+Loadings <-
+  bind_rows(lm_ABC %>% broom::tidy() %>% mutate(Name = "ABC Fund"),
+    lm_Peer %>% broom::tidy() %>% mutate(Name = "Average peer")) %>%
+  # Intercept removed so that only the factor exposures are shown
+  filter(term != "(Intercept)")
+```
+
+``` r
+Loadings %>% select(Name, term, estimate, p.value)
+```
+
+    ## # A tibble: 8 × 4
+    ##   Name         term       estimate  p.value
+    ##   <chr>        <chr>         <dbl>    <dbl>
+    ## 1 ABC Fund     Market       0.0386 9.05e- 1
+    ## 2 ABC Fund     Value        0.108  5.43e- 1
+    ## 3 ABC Fund     Momentum     0.413  4.84e- 2
+    ## 4 ABC Fund     Small_Caps   0.0184 8.01e- 1
+    ## 5 Average peer Market       0.854  1.28e-12
+    ## 6 Average peer Value       -0.0437 4.42e- 1
+    ## 7 Average peer Momentum    -0.0178 7.89e- 1
+    ## 8 Average peer Small_Caps   0.0636 7.75e- 3
+
+``` r
+g_fac <- Loadings %>%
+  mutate(term = gsub("_", " ", term)) %>%
+  ggplot() +
+  geom_bar(aes(term, estimate, fill = Name), stat = "identity", position = "dodge") +
+  geom_hline(yintercept = 0) +
+  labs(title = "What drives the returns of ABC Fund compared to the average peer",
+       subtitle = "Above zero: returns move with that part of the market. Below zero: returns move against it", x = "", y = "Exposure") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+g_fac
+```
+
+![](README_files/figure-markdown_github/Q3_Factor_Plot-1.png)
+
+The average peer is mainly driven by the market (large and highly
+significant market exposure). ABC is different as its only significant
+exposure is to momentum (at the 5% level). Thus, ts returns respond to
+stocks that have done well recently and does not follow the market.
+Thus, this suggests ABC’s returns are driven differently from its peers.
+
+I made a mistake in Point 2. I didn’t check properly and discovered
+later that the Low Vol index only starts in 2024. Including it reduced
+the regression down to only 21 months. Dropping it gives 7 years of data
+which is much more sensible !
+
+## Point 3: Relative performance over time
+
+For relative performance over time I used rolling 3 year returns, since
+cumulative returns are distorted by different start dates. To compare
+ABC to its peers, I calculated the share of peers that ABC beat each
+month. I coloured the periods where ABC beat more than half of its peers
+green, and red otherwise.
+
+``` r
+# Rolling 3 year annualised return of every fund
+Roll_Funds <- Funds %>%
+  arrange(date) %>%
+  group_by(Name) %>%
+  mutate(RollRet = RcppRoll::roll_prod(1+Returns, n = 36, fill = NA, align = "right")^(12/36) - 1) %>%
+  ungroup() %>%
+  filter(!is.na(RollRet))
+
+# ABC Fund's rolling return in its own column
+ABC_Roll <- Roll_Funds %>% filter(Name == "ABC_Fund") %>% select(YM, ABC = RollRet)
+
+# Share of peers with a lower rolling return than ABC Fund each month
+df_comp <- Roll_Funds %>%
+  filter(Name != "ABC_Fund") %>%
+  left_join(ABC_Roll, by = "YM") %>%
+  filter(!is.na(ABC)) %>%
+  mutate(XS = ABC - RollRet) %>%
+  group_by(date) %>%
+  summarise(Proportion = sum(XS>0)/n())
+```
+
+``` r
+g_share <- df_comp %>%
+  ggplot() +
+  # Green when ABC Fund beat more than half of its peers, red when it beat fewer
+  geom_ribbon(aes(date, ymin = 0.5, ymax = ifelse(Proportion > 0.5, Proportion, 0.5)), fill = "darkgreen", alpha = 0.4) +
+  geom_ribbon(aes(date, ymin = ifelse(Proportion < 0.5, Proportion, 0.5), ymax = 0.5), fill = "darkred", alpha = 0.4) +
+  geom_line(aes(date, Proportion), colour = "grey30", size = 1) +
+  # Half of peers beaten
+  geom_hline(yintercept = 0.5) +
+  labs(title = "ABC Fund has outperformed most of its peers for most of the last decade",
+       subtitle = "Share of peers with a lower rolling 3 year return than ABC Fund",
+       caption = "Green: ABC Fund beat more than half of its peers. Red: ABC Fund beat fewer than half.",
+       x = "Year", y = "Share of peers beaten") +
+  fmxdat::theme_fmx()
+
+fmxdat::finplot(g_share, x.date.dist = "1 year", x.date.type = "%Y", x.vert = T, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q3_Share_Plot-1.png)
+
+ABC beat most of its peers for most of the period, especially from 2020
+to 2022 (which was a downturn period during and after the pandemic). It
+dipped in 2019 and again in 2025 (fell below half of its peers). The
+manager should be aware of this recent weakness before taking the stage
+because clients will likely ask about it!
+
+## Point 4: Does ABC do well when dispersion is high?
+
+The manager believes his fund does well when market dispersion is high.
+To test this, I calculated the rolling 12 month dispersion of the Capped
+SWIX constituents (as in Q1) and split the months into high dispersion
+(above the 85th percentile), low (below the 25th) and other. I then
+compared ABC’s average 12 month return above the market with the average
+peer’s in each group.
+
+``` r
+# Capped SWIX month-end weights
+# Shifted forward one month so each month uses the weights known at its start
+J433_W <-
+  Monthly_Cons %>%
+  filter(Fund == "CappedSWIX") %>%
+  mutate(YM = format(date %m+% months(1), "%Y%B")) %>%
+  select(YM, Tickers, weight = Weight)
+
+# Daily stock returns with their Capped SWIX weights
+J433_Cons <-
+  Stocks %>%
+  # Month label to match the weights
+  mutate(YM = format(date, "%Y%B")) %>%
+  # Keep only stocks in the Capped SWIX that month
+  inner_join(J433_W, by = c("YM", "Tickers")) %>%
+  # Drop stocks without a return that day
+  filter(!is.na(Returns)) %>%
+  # Rescale the weights to add up to one each day (the file does not cover the full index)
+  group_by(date) %>%
+  mutate(weight = weight / sum(weight)) %>%
+  ungroup() %>%
+  # Column names used by the dispersion function
+  select(date, Tickers, Return = Returns, weight)
+
+# Benchmark (Capped SWIX) daily returns
+BM <- Idx_Daily %>% filter(Tickers == "J433") %>% select(date, BM = Returns)
+
+# Rolling 12 month (250 day) dispersion
+ann_disp <- Dispersion_Prep(df_used = J433_Cons, BMUse = BM, BMSel = "weight", NSel = 250)
+```
+
+``` r
+# Month-end dispersion
+Disp_M <-
+  ann_disp %>%
+  mutate(YM = format(date, "%Y%B")) %>%
+  group_by(YM) %>% filter(date == last(date)) %>% ungroup() %>%
+  select(YM, Value = Dispersion_W)
+
+# Fund returns joined to dispersion, split into high, low and other, then averaged
+Enviro_Tab <-
+  Q3_Rel_12m(Funds, BM_Monthly, Fund = "ABC_Fund") %>%
+  left_join(Disp_M, by = "YM") %>%
+  ungroup() %>%
+  filter(!is.na(Value)) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "dispersion") %>%
+  group_by(Enviro, Group) %>%
+  summarise(XS = mean(XS))
+```
+
+``` r
+g_disp <-
+  Enviro_Tab %>%
+  ggplot() +
+  geom_bar(aes(Enviro, XS, fill = Group), stat = "identity", position = "dodge") +
+  geom_hline(yintercept = 0) +
+  labs(title = "ABC Fund compared to the average peer when market dispersion is high and low",
+       subtitle = "Average 12 month return above the market (Capped SWIX)",
+       caption = "High dispersion: stock returns differ a lot from the market, so there is more room for active managers to differ.",
+       x = "", y = "Return above the market") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_disp, y.pct = T, y.pct_acc = 0.1)
+```
+
+![](README_files/figure-markdown_github/Q3_Dispersion-1.png)
+
+Over the longer period, the data supports the manager’s claim. In high
+dispersion months ABC beat the market while the average peer fell below
+it, and this is where ABC’s advantage over its peers was largest.
+
+A note on a mistake I made: I first only used the constituent file from
+Q1 (which only starts in 2020) and assumed that was all the dispersion
+data available (it was late at night lol). Over that short period ABC
+did not do better in high dispersion. When I realised the monthly
+weights go back much further the next morning and redid it with the full
+history, I made the necessary changes and the result reversed! The short
+period was mostly the last few years, when ABC’s performance was weaker
+(Point 3). This is still something I think the manager should keep in
+mind…
+
 # Question 4: Portfolio Construction
+
+*Write-up* (Report) can be found at `Questions/Question4/Question4.pdf`
 
 ``` r
 # Functions for this question:
 list.files('Questions/Question4/code/', full.names = T, recursive = T) %>% .[grepl('.R', .)] %>% as.list() %>% walk(~source(.))
 ```
+
+I googled what a balanced index fund is just to be sure. The first thing
+that came up was the Satrix Balanced Index Fund fact sheet (Can be found
+at this link: <https://satrix.co.za/media/93236?inline=true>). It holds
+a mix of the key local and international asset classes, and aims to grow
+capital and provide income while reducing volatility compared to an
+equity-only portfolio. I believe that is what the question is building
+towards, except it aims to build the same kind of fund but with the
+weights updated every quarter.
+
+## Data
+
+I gave a few objects a `Q4_` name here so they don’t overwrite the
+objects with the same names from the other questions.
+
+``` r
+Q4_MSCI <- read_rds("Questions/Question4/data/MSCI_Indexes.rds")
+Bond_Yields <- read_rds("Questions/Question4/data/Global_Bond_Yields.rds")
+Commods <- read_rds("Questions/Question4/data/Commodities.rds")
+Q4_Idx_Daily <- read_rds("Questions/Question4/data/Index_Returns_Daily.rds")
+LCL_Yield <- read_rds("Questions/Question4/data/Monthly_LCL_Yield_Indexes.rds")
+STeFI <- read_rds("Questions/Question4/data/STeFI_Index.rds")
+```
+
+## Choosing the assets
+
+I used the assets the question mentions as my starting point. For global
+equity I used the MSCI USA, Europe, Japan and EM indices instead of a
+world index. A world index already has these in it and would count the
+same stocks twice. The question asks for large and mid caps for local
+equity, and I used the J200 and J201 for these. For the two factor
+indices I used value and momentum, since low vol only starts in 2024 and
+would fail the 5 year rule anyway (I learnt this the hard way in Q3). I
+also added the ALBI, CILI and listed property (J253) because the
+question lists them. On top of those I added three 10 year government
+bonds, gold and the commodity index. I left out oil because it is
+already in the commodity index.
+
+The global indices are in USD and the local ones in ZAR. I checked all
+the data files for a USD/ZAR rate to convert them but there wasn’t one
+(SAVIUSD is only the volatility of the rand). This is something to keep
+in mind with the results.
+
+## Bond returns
+
+The paper gives the bond data as yields and I needed returns first. I
+remembered the standard formula from previous coursework, but I googled
+it as well and found a Quant Stack Exchange answer
+(<https://quant.stackexchange.com/questions/22837/how-to-calculate-us-treasury-total-return-from-yield/57403#57403>)
+that gives the monthly return as the interest (yield divided by 12)
+minus duration times the change in yield. I purposefully left out
+convexity because it matters less for small changes. It is a rough proxy
+(convexity left out and fixed modified duration) and I would treat the
+bond results with some caution.
+
+To pick the duration, I checked the average 10 year yields since 2010.
+
+``` r
+Bond_Yields %>%
+  filter(Name %in% c("US_10Yr", "Germany_10Yr", "UK_10Yr"), date >= as.Date("2010-01-01")) %>%
+  group_by(Name) %>%
+  summarise(Avg_Yield = mean(TRI))
+```
+
+    ## # A tibble: 3 × 2
+    ##   Name         Avg_Yield
+    ##   <chr>            <dbl>
+    ## 1 Germany_10Yr      1.27
+    ## 2 UK_10Yr           2.36
+    ## 3 US_10Yr           2.69
+
+The average across the three is about 2.1%. I then used the duration
+formula for a 10 year bond with half-yearly coupons equal to its yield.
+
+``` r
+# average yield of the three bonds (in decimals)
+i <- 0.0211
+
+# (20 half-year periods) coupon each period and the principal at the end
+t <- 1:20
+CashFlow <- c(rep(i / 2 * 100, 19), 100 + i / 2 * 100)
+
+# cash flows discounted at the yield
+PV_CashFlow <- CashFlow / (1 + i / 2)^t
+
+# Macaulay duration, then modified duration
+Mac_D <- sum(t * PV_CashFlow) / (2 * sum(PV_CashFlow))
+Mac_D / (1 + i / 2)
+```
+
+    ## [1] 8.973006
+
+This gives a modified duration of about 9. I used 9 for all three bonds.
+
+## Monthly returns for all assets
+
+I put each asset’s class and region in a small table since the limits
+are set per group. Then I built one table of monthly returns. The local
+indices are daily returns. I chained them into an index first and took
+month-end returns (the same way as in Q3). The files also end their
+months on different days (trading day vs calendar day, pain again). I
+used one date per year-month so that all the assets line up.
+
+``` r
+# Asset class and region of each asset (used for the group limits)
+ref <- bind_rows(
+  tibble(Name = c("MSCI_USA", "MSCI_EU", "MSCI_Jap", "MSCI_EM"),
+         Class = "Equity", Region = "Global"),
+  tibble(Name = c("J200", "J201", "STXVALJ433", "STXMOMJ433", "J253"),
+         Class = "Equity", Region = "Local"),
+  tibble(Name = c("US_10Yr", "Germany_10Yr", "UK_10Yr"),
+         Class = "Bonds", Region = "Global"),
+  tibble(Name = c("ALBITR", "CILITR"),
+         Class = "Bonds", Region = "Local"),
+  tibble(Name = c("Gold", "Bcom_Index"),
+         Class = "Commodities", Region = "Global")
+)
+
+Q4_Returns <- Q4_Build_Fund(Q4_MSCI, Bond_Yields, Commods, Q4_Idx_Daily, LCL_Yield, ref)
+
+# start date and months of data for each asset
+Q4_Returns %>%
+  group_by(Name) %>%
+  summarise(Start = format(min(date), "%b %Y"), Months = n()) %>%
+  ungroup() %>%
+  arrange(desc(Months))
+```
+
+    ## # A tibble: 16 × 3
+    ##    Name         Start    Months
+    ##    <chr>        <chr>     <int>
+    ##  1 ALBITR       Feb 2001    308
+    ##  2 J253         Jan 2002    297
+    ##  3 Bcom_Index   Feb 2005    260
+    ##  4 Germany_10Yr Feb 2005    260
+    ##  5 Gold         Feb 2005    260
+    ##  6 MSCI_EM      Feb 2005    260
+    ##  7 MSCI_EU      Feb 2005    260
+    ##  8 MSCI_Jap     Feb 2005    260
+    ##  9 MSCI_USA     Feb 2005    260
+    ## 10 UK_10Yr      Feb 2005    260
+    ## 11 US_10Yr      Feb 2005    260
+    ## 12 CILITR       Mar 2007    235
+    ## 13 J200         Feb 2015    140
+    ## 14 J201         Feb 2015    140
+    ## 15 STXMOMJ433   Apr 2017    114
+    ## 16 STXVALJ433   Apr 2018    102
+
+The local equity indices start later than the rest (J200 and J201 in
+2015, momentum in 2017 and value in 2018). With the 5 year rule they
+only come into the fund later on.
+
+## Limits and gap filling
+
+The limits in the question are per group (equity, bonds, commodities and
+global). Each group gets its limit in a small table and this is turned
+into `Amat` and `bvec` for `quadprog`. The upper limits are multiplied
+by minus one since `solve.QP` only works with “greater than or equal to”
+constraints.
+
+The question says to use at least 10 years of data but only to drop
+assets with less than 5 years. This means momentum and value have gaps
+in the 10 year window. A covariance matrix can’t have gaps. I filled
+them with the `impute_missing_returns` function, using random draws from
+each asset’s own return distribution.
+
+## Optimising every quarter
+
+I went with minimum variance since it doesn’t need return forecasts and
+this is usually where optimisers struggle. I re-optimised the fund at
+every quarter-end. Each time it takes the last 10 years of monthly
+returns, keeps assets with at least 5 years of data, fills the gaps,
+estimates a Ledoit-Wolf covariance matrix and solves for the weights.
+The covariance uses data from 2010 and the first rebalance is at the end
+of 2019.
+
+``` r
+# wide return matrix from 2010 onwards
+return_mat <-
+  Q4_Returns %>%
+  filter(date >= ymd(20100101)) %>%
+  select(date, Name, Returns) %>%
+  spread(Name, Returns)
+
+# quarter-end rebalance dates
+EOM_datevec <-
+  return_mat %>% select(date) %>% unique %>%
+  mutate(YM = format(date, "%Y%B")) %>% group_by(YM) %>% filter(date == last(date)) %>% ungroup() %>%
+  mutate(Months = as.numeric(format(date, format = "%m"))) %>% filter(Months %in% c(3, 6, 9, 12)) %>%
+  pull(date) %>% unique
+
+# minimum variance weights at each rebalance date
+Q4_Weights <-
+  EOM_datevec %>% map_df(~Q4_Roll_Optimizer(return_mat, EOM_datevec = ., ref, LookBackSel = 120))
+```
+
+I checked that the weights sum to 1 and stay within all the limits on
+every date (and that the solver never failed). The bond, commodity and
+global limits are binding every quarter. This means the split between
+asset classes stays fixed and the optimiser just picks the assets within
+each class.
+
+## Comparing the fund
+
+To compare the fund, I set up a fixed-weight portfolio using the
+strategic benchmark weights from the Satrix fact sheet. I used the
+closest indices I had (Capped SWIX, MSCI World, MSCI EM, ALBI, J253 and
+STeFI for cash) and added their small global infrastructure and global
+property weights to MSCI World. It is only an approximation and not the
+actual fund, so in the write-up I just call it a strategic balanced
+allocation. Its weights get reset on the same quarter-end dates as the
+fund. I also added the Capped SWIX on its own as an equity-only
+comparison. The portfolio returns use Safe_Return.portfolio, the same as
+for SafeCore in Q1.
+
+``` r
+# minimum variance fund returns
+MinVol_Rets <- Q4_Port_Returns(Weights = Q4_Weights %>% select(date, Tickers, Weight = minvol),
+                               Returns = Q4_Returns %>% select(date, Tickers = Name, Returns),
+                               Name = "Minimum variance")
+
+# monthly returns for the strategic balanced allocation
+ref_bm <- tibble(Name = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253", "STEFI"))
+BM_Returns <- Q4_Build_Fund(Q4_MSCI, Bond_Yields, Commods,
+                            bind_rows(Q4_Idx_Daily, STeFI %>% select(date, Tickers, Returns)),
+                            LCL_Yield, ref_bm)
+
+# fixed weights, reset on the same quarter-end dates as the fund
+Port_BM <- tibble(Tickers = c("J433", "MSCI_AllWorld", "MSCI_EM", "ALBITR", "J253", "STEFI"),
+                  Weight  = c(0.40, 0.30, 0.08, 0.17, 0.03, 0.02))
+
+BM_Weights <- unique(Q4_Weights$date) %>% map_df(~Port_BM %>% mutate(date = .x))
+
+Q4_BM_Rets <- Q4_Port_Returns(Weights = BM_Weights,
+                              Returns = BM_Returns %>% select(date, Tickers = Name, Returns),
+                              Name = "Strategic balanced allocation")
+
+# equity-only comparison: Capped SWIX over the same months
+SWIX_Rets <-
+  BM_Returns %>%
+  filter(Name == "J433", date > min(Q4_Weights$date)) %>%
+  select(date, Returns) %>%
+  mutate(Tickers = "Capped SWIX")
+
+All_Rets <- bind_rows(MinVol_Rets, Q4_BM_Rets, SWIX_Rets)
+```
+
+## Results
+
+All three start in January 2020. This means the cumulative returns
+aren’t distorted by different start dates (unlike in Q3).
+
+``` r
+g_cum <-
+  All_Rets %>%
+  arrange(date) %>%
+  group_by(Tickers) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  mutate(CP = CP / first(CP)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_line(aes(date, CP, color = Tickers)) +
+  labs(title = "Cumulative Returns",
+       subtitle = "Minimum variance fund vs strategic balanced allocation and Capped SWIX",
+       x = "", y = "Growth of R1 invested in 2020",
+       caption = "Note:\nAll portfolios start in January 2020.") +
+  fmxdat::theme_fmx(CustomCaption = T)
+
+fmxdat::finplot(g_cum)
+```
+
+![](README_files/figure-markdown_github/Q4_cum-1.png)
+
+All three start in January 2020, so the comparison isn’t distorted by
+different start dates. The fund lost less than both comparisons in the
+2020 decline. However, it grew more slowly from 2022 and ends below both
+the strategic balanced allocation and the Capped SWIX. This suggests the
+fund offers more protection when markets fall but gives up some of the
+gains when they rise.
+
+Drawdown plots are good for a risk-sensitive client like a balanced
+fund, so I added one (same as in Q1).
+
+``` r
+g_dd <-
+  All_Rets %>%
+  arrange(date) %>%
+  group_by(Tickers) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  mutate(Drawdown = CP / cummax(CP) - 1) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_line(aes(date, Drawdown, color = Tickers)) +
+  labs(title = "Drawdowns: Minimum Variance Fund and Comparison Portfolios",
+       subtitle = "Fall from the previous peak",
+       x = "", y = "Drawdown") +
+  fmxdat::theme_fmx()
+
+fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q4_dd-1.png)
+
+The drawdowns show how far each portfolio falls from its previous peak.
+The fund had the smallest drawdown in 2020 and near the end of the
+sample. In 2022, however, its drawdown was similar to the strategic
+balanced allocation. Therefore, the lower volatility didn’t always lead
+to smaller losses.
+
+I then used the same stats table as in Q1 and Q2, with the strategic
+balanced allocation as the benchmark.
+
+``` r
+Q4_Tab_stats <-
+  bind_rows(
+    Moments_Comp(All_Rets %>% select(date, Tickers, Ret = Returns), BM = "Strategic balanced allocation", Yrs_LookBack = 3, NA_Check = 0.8),
+    Moments_Comp(All_Rets %>% select(date, Tickers, Ret = Returns), BM = "Strategic balanced allocation", Yrs_LookBack = 5, NA_Check = 0.8)
+  )
+
+Format_Stats_Table(Q4_Tab_stats, BM = "Strategic balanced allocation")
+```
+
+<div id="lcdlfipzft" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lcdlfipzft table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lcdlfipzft thead, #lcdlfipzft tbody, #lcdlfipzft tfoot, #lcdlfipzft tr, #lcdlfipzft td, #lcdlfipzft th {
+  border-style: none;
+}
+
+#lcdlfipzft p {
+  margin: 0;
+  padding: 0;
+}
+
+#lcdlfipzft .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lcdlfipzft .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lcdlfipzft .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lcdlfipzft .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lcdlfipzft .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lcdlfipzft .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lcdlfipzft .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lcdlfipzft .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lcdlfipzft .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lcdlfipzft .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lcdlfipzft .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lcdlfipzft .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lcdlfipzft .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lcdlfipzft .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lcdlfipzft .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lcdlfipzft .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lcdlfipzft .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lcdlfipzft .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lcdlfipzft .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lcdlfipzft .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lcdlfipzft .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lcdlfipzft .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lcdlfipzft .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lcdlfipzft .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lcdlfipzft .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lcdlfipzft .gt_left {
+  text-align: left;
+}
+
+#lcdlfipzft .gt_center {
+  text-align: center;
+}
+
+#lcdlfipzft .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lcdlfipzft .gt_font_normal {
+  font-weight: normal;
+}
+
+#lcdlfipzft .gt_font_bold {
+  font-weight: bold;
+}
+
+#lcdlfipzft .gt_font_italic {
+  font-style: italic;
+}
+
+#lcdlfipzft .gt_super {
+  font-size: 65%;
+}
+
+#lcdlfipzft .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lcdlfipzft .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lcdlfipzft .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lcdlfipzft .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lcdlfipzft .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lcdlfipzft .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lcdlfipzft .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#lcdlfipzft .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#lcdlfipzft div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <caption>Fund Moments Comparison</caption>
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="4" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>Index Statistics: Relative to Strategic balanced allocation</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Info">Info</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Minimum-variance">Minimum variance</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Strategic-balanced-allocation">Strategic balanced allocation</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Capped-SWIX">Capped SWIX</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="4" class="gt_group_heading" style="background-color: rgba(69,69,69,0.15); font-size: large; text-align: left; font-weight: bold;" scope="colgroup" id="Last-3-Years">Last 3 Years</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Last-3-Years  Info" class="gt_row gt_left">Cum Returns</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">69.8%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">75.0%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">69.6%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Returns (Ann.)</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">19.3%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">20.5%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">19.3%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Returns Excess (Ann.)</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">−1.0%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.0%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">−1.0%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">SD (Ann.)</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">8.9%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">9.8%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">12.8%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Adj. Sharpe Ratio</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">1.356</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.168</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">0.853</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Pain Index</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">0.008</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.008</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">0.026</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Avg DD</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">1.8%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">2.7%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">4.7%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Tracking Error</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">4.6%</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.0%</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">6.2%</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Information Ratio</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">-0.260</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">-</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">-0.201</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">0.802</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">1.150</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta Bull</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">0.809</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">0.879</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Beta Bear</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">0.732</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">1.184</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Up-Down Ratio</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">0.393</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.000</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">0.643</td></tr>
+    <tr><td headers="Last-3-Years  Info" class="gt_row gt_left">Modified CVaR</td>
+<td headers="Last-3-Years  Minimum-variance" class="gt_row gt_right">-0.048</td>
+<td headers="Last-3-Years  Strategic-balanced-allocation" class="gt_row gt_right">-0.070</td>
+<td headers="Last-3-Years  Capped-SWIX" class="gt_row gt_right">-0.083</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="4" class="gt_group_heading" style="background-color: rgba(69,69,69,0.15); font-size: large; text-align: left; font-weight: bold;" scope="colgroup" id="Last-5-Years">Last 5 Years</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Last-5-Years  Info" class="gt_row gt_left">Cum Returns</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">67.5%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">84.2%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">91.9%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Returns (Ann.)</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">10.9%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">13.0%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">13.9%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Returns Excess (Ann.)</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">−1.9%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.0%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.8%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">SD (Ann.)</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">10.3%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">11.6%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">13.7%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Adj. Sharpe Ratio</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.997</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.970</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.918</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Pain Index</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.023</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.021</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.032</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Avg DD</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">4.0%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">4.2%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">6.9%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Tracking Error</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">4.4%</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.0%</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">5.7%</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Information Ratio</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">-0.480</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">-</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.164</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.823</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">1.079</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta Bull</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.775</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.990</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Beta Bear</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.798</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">1.000</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">1.126</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Up-Down Ratio</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">0.317</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">0.000</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">0.634</td></tr>
+    <tr><td headers="Last-5-Years  Info" class="gt_row gt_left">Modified CVaR</td>
+<td headers="Last-5-Years  Minimum-variance" class="gt_row gt_right">-0.056</td>
+<td headers="Last-5-Years  Strategic-balanced-allocation" class="gt_row gt_right">-0.067</td>
+<td headers="Last-5-Years  Capped-SWIX" class="gt_row gt_right">-0.079</td></tr>
+  </tbody>
+  
+</table>
+</div>
+
+The fund has the lowest volatility, the smallest average drawdown and
+the smallest modified CVaR over both periods. Its beta is below one,
+which means it moves less than the benchmark. However, it earned less
+than the benchmark over five years and its information ratio is negative
+over both periods. Over three years it got a similar return to the
+Capped SWIX with much lower volatility. This shows that the fund
+achieves lower risk, but at the cost of some return.
+
+Lastly I plotted the weights at each rebalance as a stacked bar, with
+the assets ordered by class.
+
+``` r
+g_wts <-
+  Q4_Weights %>%
+  mutate(Tickers = factor(Tickers, levels = ref$Name)) %>%
+  ggplot() +
+  geom_bar(aes(date, minvol, fill = Tickers), stat = "identity") +
+  labs(title = "Weights Plot",
+       subtitle = "Stacked bar of the fund weights at each quarterly rebalance",
+       x = "", y = "Weight") +
+  fmxdat::theme_fmx()
+
+fmxdat::finplot(g_wts, y.pct = T, y.pct_acc = 1)
+```
+
+![](README_files/figure-markdown_github/Q4_weights_plot-1.png)
+
+The bond, commodity and global limits bind at every rebalance, so the
+split between asset classes stays the same over the whole sample period.
+The optimiser mainly decides which assets to hold within each class. For
+example, the fund held mostly US bonds until 2023 and then moved towards
+German bonds, while inflation-linked bonds were held throughout. Gold
+makes up most of the commodity weight. The local equity indexes only
+come in once they have five years of data, and MSCI Japan has the
+largest global equity weight. Part of this preference for global assets
+may be due to the USD/ZAR mix, so the weights should be interpreted with
+caution.
+
+## Summary
+
+Overall, the fund achieves lower risk than both comparisons. It had the
+lowest volatility and lost the least during the 2020 decline. However,
+it also earned lower returns, and its losses were not always smaller
+than the benchmark’s (2022). The limits on bonds, commodities and global
+assets were binding throughout, so the split between asset classes was
+mostly set by the limits and the optimiser mainly chose the assets
+within each class. With the short sample, the USD/ZAR mix and the bond
+proxy, I wouldn’t read too much into the exact numbers. The weights are
+more of a starting point for discussion than a final answer.
+
+Note: Since the limits bind every quarter, I would have liked to also
+run the optimiser without the group limits to see what the limits
+actually cost in risk and return. I ran out of time for this, but it is
+the first thing I would add. And maybe also fix the currency mismatch…
