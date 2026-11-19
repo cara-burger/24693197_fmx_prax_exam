@@ -218,7 +218,7 @@ Q4_Weights <-
 
 # Results \label{Results}
 
-This section will look at how the fund performed compared to two other portfolios. The first is a strategic balanced allocation, which holds fixed weights based on the published benchmark weights of a South African balanced index fund (see Satrix Balanced Index fund pdf in the bin folder). These are 40% in the Capped SWIX, 30% in MSCI World, 8% in MSCI Emerging Markets, 17% in the ALBI, 3% in listed property and 2% in cash (STeFI). Its weights are reset on the same quarterly dates as the fund. The second is the Capped SWIX on its own, which shows how the fund compares to holding only local equities.
+This section will look at how the fund performed compared to two other portfolios. The first is a strategic balanced allocation, which holds fixed weights based on the published benchmark weights of a South African balanced index fund [@satrix2026] (see Satrix Balanced Index fund pdf in the bin folder). These are 40% in the Capped SWIX, 30% in MSCI World, 8% in MSCI Emerging Markets, 17% in the ALBI, 3% in listed property and 2% in cash (STeFI). Its weights are reset on the same quarterly dates as the fund. The second is the Capped SWIX on its own, which shows how the fund compares to holding only local equities.
 
 ```{r Port_Returns}
 # minimum variance fund returns
