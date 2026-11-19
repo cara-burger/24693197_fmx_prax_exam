@@ -3,7 +3,7 @@
 # Remove comments and add values where applicable.
 # The descriptions below should be self-explanatory
 
-title: "Comparing the JSE Large, Mid and Small Cap Indexes"
+title: "Comparing the JSE Large, Mid and Small Cap indices"
 #subtitle: "This will appear as Right Header"
 
 documentclass: "elsarticle"
@@ -25,7 +25,7 @@ Thesis_FP: FALSE
 # --------- Front Page
 # Comment: ----- Follow this pattern for up to 5 authors
 AddTitle: TRUE # Use FALSE when submitting to peer reviewed platform. This will remove author names.
-Author1: "Cara Burger (24693197)"  # First Author - note the thanks message displayed as an italic footnote of first page.
+Author1: "24693197"  # First Author - note the thanks message displayed as an italic footnote of first page.
 Ref1: "Stellenbosch University, Stellenbosch, South Africa" # First Author's Affiliation
 Email1: "24693197\\@sun.ac.za" # First Author's Email address
 
@@ -82,8 +82,9 @@ linestretch: 1.2                # Set distance between lines.
 link-citations: TRUE            # This creates dynamic links to the papers in reference list.
 
 ### Adding additional latex packages:
-# header-includes:
+header-includes:
 #    - \usepackage{colortbl} # Add additional packages here.
+- \providecommand{\pandocbounded}[1]{#1}
 
 output:
   pdf_document:
@@ -92,7 +93,7 @@ output:
     fig_width: 3.5 # Adjust default figure sizes. This can also be done in the chunks of the text.
     fig_height: 3.5
 abstract: |
-  Abstract to be written at the end.
+ 
 ---
 
 ```{r setup, include=FALSE}
@@ -129,10 +130,31 @@ Size_Clean <-
 
 # Introduction \label{Introduction}
 
+This report compares the traits of the three local size indices, namely the large cap, mid cap and small cap indices. The Capped SWIX is used as the benchmark because it represents the broader local equity market. The report first looks at what each index holds (its sector exposure and stock concentration). It then compares the risk of each index, using the realised volatility of its constituents and the behaviour of each index in high and low volatility periods. Lastly, it compares the returns of the indices and how much each differs from the benchmark, using active share. Small cap stocks are usually expected to be more volatile than large cap stocks. This report will therefore also look at whether this holds for the local size indices.
+
 # Data and appraoch 
 
+The report uses the monthly constituents of each index from 2007, along with daily stock and index returns from 2015. Therefore, the volatility and return results cover a shorter period than the sector and concentration results.
+
+The following techniques are used:
+
+* Concentration refers to how much of an index is held in its largest stocks. A market capitalisation weighted index can become too concentrated in a few large stocks. It is measured as the combined weight of the ten largest stocks and ten was chosen as the large cap index holds only around forty stocks.
+* Realised volatility refers to the annualised standard deviation of daily returns. Standard deviation is mostly used as a means of estimating risk. For each stock, it is calculated over a rolling one year window. The volatility of an index's constituents is then the weighted average of these values, using the index weights at each month end.
+* A drawdown refers to the fall from the previous peak. For each stock, the largest drawdown within each calendar year is calculated. The median across the constituents of each index is then compared.
+* Stratification refers to studying the statistical properties of a series during different periods. The periods are stratified according to the monthly volatility of the Capped SWIX. Months are split into high volatility (above the 85th percentile), low volatility (below the 25th percentile) and other months. The performance of each index is compared across these periods.
+* Principal component analysis (PCA) aims to reduce the dimensionality of the sources of variation in a set of returns. It reorganises the returns into independent components that explain (in decreasing order) the variation in the data. For each index and calendar year, PCA is applied to the correlation matrix of the constituents' daily log returns. The correlation matrix was chosen as it lets all stocks enter on an equal volatility basis. The proportion of variation explained by the first component is used as a measure of how much the stocks in an index move together.
+* Rolling returns refer to the annualised return over a moving three year window. Cumulative returns can be misleading because early outperformance can greatly skew later performance. Rolling returns avoid this and show the experience of an investor who held the index for three years.
+* Active share refers to the share of an index's holdings that differ from the benchmark. It ranges from zero (the same stocks and weights as the Capped SWIX) to one (no stocks in common). It is calculated as
+
+\begin{align}
+AS_t = \frac{1}{2} \sum_{i=1}^{N} \left| w_{i,t}^{Index} - w_{i,t}^{SWIX} \right| \label{eq1}
+\end{align}
+
+where a stock not held by one of the two indices has a weight of zero.
 
 # Sector Exposure and Concentration \label{Comp}
+
+This section will look at what each index holds (sector exposure) and each index's concentration. 
 
 ```{r sector, fig.cap = "Sector exposure by index \\label{fig:sector}", fig.height = 5}
 g_sector <-
@@ -147,6 +169,8 @@ fmxdat::theme_fmx() + fmxdat::fmx_fills()
 
 fmxdat::finplot(g_sector, y.pct = T, y.pct_acc = 1)
 ```
+
+Figure \ref{fig:sector} shows the weight of each sector in each index over time. Industrials is the largest sector in the Capped SWIX over the whole sample and the second largest is resources. The large cap index started by holding close to 50% of its weight in resources. This share fell to its lowest point around 2016 and has increased again since. The large cap index also had an increased share of financials held from around 2015. The mid cap index was mainly made up of industrials at the start of the sample, but this share has declined as financials and resources have grown. The small cap index has the largest exposure to property of all the indices. A large part of the small cap index has no sector label early in the sample, but this share has decreased since 2018. This figure shows that that each index carries a different sector risk. 
 
 ```{r conc, fig.cap = "Weight of the ten largest stocks in each index \\label{fig:conc}", fig.height = 4}
 Conc <-
@@ -168,8 +192,12 @@ fmxdat::theme_fmx() + fmxdat::fmx_cols()
 fmxdat::finplot(g_conc, y.pct = T, y.pct_acc = 1)
 ```
 
+Figure \ref{fig:conc} shows the combined weight of the ten largest stocks in each index. A market capitalisation weighted index can become concentrated in a few large stocks. The large cap index is the most concentrated throughout the sample, although its top ten weight fell after 2023 and in recent years it is only slightly higher than the others. The mid cap index has become more concentrated since 2020 and is close to the large cap index by the end of the sample. The small cap index is the least concentrated for most of the sample. Until around 2020, the Capped SWIX lies between the large cap index and the smaller indexes. Therefore, an investor in the large cap index is more exposed to the performance of a few stocks than an investor in the small cap index.
+
 
 # Volatility \label{Vol}
+
+This section will look at the risk of each index, using a few different techniques to evaluate and discuss it.
 
 ```{r cons_vol, fig.cap = "Rolling one year realised volatility of index constituents \\label{fig:consvol}", fig.height = 4}
 
@@ -186,6 +214,43 @@ g_consvol <-
 
 fmxdat::finplot(g_consvol, y.pct = T, y.pct_acc = 1)
 ```
+
+Standard deviation is mostly used as a means of estimating risk. Figure \ref{fig:consvol} shows the weighted average realised volatility of the constituents of each index. The volatility of all four indices increased in 2020 and stayed high for a year (as the 2020 returns remain in the one year window)). The small cap constituents are the most volatile for most of 2016 to 2022. The large cap index and the Capped SWIX follow almost the same path. From 2022 to 2024 the mid cap constituents are the least volatile. From 2025 the small cap constituents are the least volatile.
+
+```{r year_dd, fig.cap = "Median largest peak-to-trough fall of index constituents within each year \\label{fig:yeardd}", fig.height = 4}
+# Largest peak-to-trough fall of each stock within each calendar year
+Stock_DD <-
+  Stocks %>%
+  filter(!is.na(Returns)) %>%
+  arrange(date) %>%
+  mutate(Year = format(date, "%Y")) %>%
+  group_by(Tickers, Year) %>%
+  mutate(CP = cumprod(1 + Returns)) %>%
+  mutate(Drawdown = CP / cummax(CP) - 1) %>%
+  summarise(Max_DD = min(Drawdown))
+
+# Median fall of the stocks in each index, using the constituents at each December
+Year_DD <-
+  Size_Clean %>%
+  filter(format(date, "%m") == "12", date >= ymd(20151201)) %>%
+  mutate(Year = format(date, "%Y")) %>%
+  left_join(Stock_DD, by = c("Tickers", "Year")) %>%
+  group_by(Fund, Year) %>%
+  summarise(Median_DD = median(Max_DD, na.rm = T))
+
+g_dd <-
+  Year_DD %>%
+  ggplot() +
+  geom_bar(aes(Year, Median_DD, fill = Fund), stat = "identity", position = "dodge") +
+  labs(title = "Peak-to-Trough Falls of Index Constituents",
+       subtitle = "Median of each stock's largest fall from its peak within the year",
+       x = "Year", y = "Largest fall from peak") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_dd, y.pct = T, y.pct_acc = 1, x.vert = T)
+```
+
+Figure \ref{fig:yeardd} shows the median of each stock's largest fall from its peak within each year. In most years, the typical stock in each index fell by between a fifth and a third from its peak. These declines are very similar across the size indices. The typical large cap stock falls almost as much as the typical small cap stock in most years. The largest falls for all indices occurred in 2020, which is to be expected. This suggests that, the large cap index is about as risky as the small cap index.
 
 ```{r strat, results = 'asis'}
 # Daily index returns with the same labels as the constituent data
@@ -219,11 +284,37 @@ print(xtable(Strat_Tab, caption = "Annualised return and SD by Capped SWIX volat
       caption.placement = 'bottom', include.rownames = FALSE)
 ```
 
+Table \ref{tab:strat} shows the annualised return and standard deviation of each index in high volatility, low volatility and other months. All four indices have a negative average return in high volatility months. In these months the large cap index falls the least and the small cap index falls the most. In low volatility months the large cap index has the highest return. In other months the small cap index has the highest return. The small cap index has the lowest standard deviation in every group. This contrasts with Figure \ref{fig:consvol}, where its constituents are the most volatile for much of the sample.
+
+```{r pca, fig.cap = "Proportion of constituent return variation explained by the first principal component \\label{fig:pca}", fig.height = 4}
+# Constituents of each index at each December, one list element per index and year
+PCA <-
+  Size_Clean %>%
+  filter(format(date, "%m") == "12", date >= ymd(20151201)) %>%
+  group_split(Fund, date) %>%
+  map_df(~Q2_PCA(., Stocks))
+
+g_pca <-
+  PCA %>%
+  ggplot() +
+  geom_bar(aes(Year, Prop, fill = Fund), stat = "identity", position = "dodge") +
+  labs(title = "Eigenvalue Proportions of Index Constituents",
+       subtitle = "Proportion of variation explained by the first principal component, per calendar year",
+       x = "Year", y = "Proportion of variation (PC 1)") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_pca, y.pct = T, y.pct_acc = 1, x.vert = T)
+```
+
+Figure \ref{fig:pca} shows the proportion of the variation in each index's constituent returns that is explained by the first principal component. The first principal component can be interpreted as a common market effect. Threfore, a higher proportion implies a higher level of commonality in returns between the stocks in an index. This leaves less room for diversification within the index. The large cap index has the highest proportion in every year and the small cap index has the lowest. The proportion increased for all indices in 2020 because the comovement between stocks increased during this period. This helps explain the earlier results. Although the small cap constituents are volatile, they show less comovement. Therefore, their movements partly offset each other and the small cap index has the lowest volatility.
+
 # Returns \label{Ret}
+
+This section will look at the returns of each index. 
 
 ```{r roll_rets, fig.cap = "Rolling three year annualised returns \\label{fig:rollrets}", fig.height = 4}
 
-# Monthly returns of the size indexes and the Capped SWIX, with the same labels as the constituent data
+# Monthly returns of the size indices and the Capped SWIX, with the same labels as the constituent data
 Idx_Monthly <-
   Idx_Daily %>%
   filter(Tickers %in% c("J200", "J201", "J202", "J433")) %>%
@@ -245,17 +336,21 @@ g_roll <-
   ggplot() +
   geom_line(aes(date, RollRets, color = Fund), alpha = 0.8) +
   labs(title = "Rolling 3 Year Annualised Returns",
-       subtitle = "Size indexes compared to the Capped SWIX",
+       subtitle = "Size indices compared to the Capped SWIX",
        x = "Year", y = "Rolling 3 year return (Ann.)") +
   fmxdat::theme_fmx() + fmxdat::fmx_cols()
 
 fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
 ```
 
+Figure \ref{fig:rollrets} shows the rolling three year annualised return of each index. The small cap index has the widest range of rolling returns. It had the lowest rolling returns around 2020 and the highest from 2022 to 2024. The large cap index had the highest rolling returns for most of the period before 2022, where it surpassed by the small cap index. The mid cap index is at or below the Capped SWIX for most of the period. By the end of the sample, all four indices have similar rolling returns. Therefore, the index that performed best depends on the period in which an investor held it.
+
 # Active Share \label{AS}
 
+This section will look at how different each size index is from the benchmark.
+
 ```{r active_share, fig.cap = "Active share of each size index relative to the Capped SWIX \\label{fig:as}", fig.height = 4}
-# Weights of every stock in all four indexes side by side (0 if a stock is not in that index)
+# Weights of every stock in all four indices side by side (0 if a stock is not in that index)
 Wide_W <-
   Size_Clean %>%
   select(date, Tickers, Fund,Weight) %>%
@@ -281,6 +376,8 @@ g_as <-
 fmxdat::finplot(g_as, y.pct = T, y.pct_acc = 1)
 ```
 
+Figure \ref{fig:as} shows the active share of each size index relative to the Capped SWIX. The large cap index has the lowest active share. This suggests that its stocks make up a large part of the Capped SWIX. The small cap index has an active share close to one through the whole sample period. The mid cap index lies between the two, but generally closer to the small cap index. The active share of the large cap index decreased in 2023 and has remained at this lower level since. The active share of the mid cap index slightly declined after 2020 and has increased again since 2025.  Therefore, the small cap index gives an investor the most different set of stocks from the benchmark, while the large cap index gives the least.
+
 ```{r stats, results = 'asis'}
 Tab_stats <-
   bind_rows(
@@ -290,9 +387,13 @@ Tab_stats <-
   # Same labels as the rest of the report
   rename(LargeCaps = J200, MidCaps = J201, SmallCaps = J202, CappedSWIX = J433)
 
-print(xtable(Tab_stats, caption = "Risk and return statistics of the size indexes relative to the Capped SWIX \\label{tab:stats}", digits = 3),
+print(xtable(Tab_stats, caption = "Risk and return statistics of the size indices relative to the Capped SWIX \\label{tab:stats}", digits = 3),
       floating = TRUE, table.placement = 'H', comment = FALSE,
       caption.placement = 'bottom', include.rownames = FALSE, size = "\\footnotesize")
 ```
 
+Table \ref{tab:stats} reports a table of statistics for financial ratios over the last three and five years, relative to the Capped SWIX. As the Capped SWIX is the benchmark, its relative measures (such as tracking error and beta) are not meaningful. The small cap index has the highest annualised return and the lowest standard deviation over both periods. Therefore, it also has the highest adjusted Sharpe ratio and the smallest modified CVaR. Its beta is the lowest and its tracking error the highest. This suggests that it moves the least with the benchmark. Its beta in bull-market periods is also much lower than its beta in bear-market periods. Therefore, the small cap index follows the benchmark less when the market rises than when it falls. The large cap index has a beta above one and the lowest tracking error of the three size indexes. The mid cap index has the lowest return over both periods and a negative information ratio. This suggests that the small cap index offered the best return for its level of risk over both periods, and that the mid cap index offered the lowest return. Although it displayed signs of slightly higher market risk, the large cap index behaved most like the benchmark.
+
 # Conclusion \label{Conc}
+
+This report compared the large, mid and small cap indices with the Capped SWIX. Each index carries a different sector exposure. The large cap index is the most concentrated, its stocks show the most comovement and it is the most similar to the benchmark. The mid cap index has had the lowest returns in recent years. The small cap constituents are the most volatile for much of the sample. However, they show the least signs of comovement. Therefore, the small cap index has the lowest volatility and the highest risk-adjusted return over the last three and five years. It is also the most different from the benchmark,but it had the largest average losses in high volatility months. Contrary to what is widely expected, the results do not support the view that small caps are the most volatile part of the local market. The large cap index carries similar or higher risk than the small cap index over large parts of the sample period. It is evident that the size indices offer investors different risk and return profiles. In particular, the small cap index offers diversification away from the benchmark. 
