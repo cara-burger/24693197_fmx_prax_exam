@@ -648,6 +648,50 @@ print(Table, type = "latex", comment = FALSE, include.rownames = FALSE, table.pl
 
 Table \ref{Table_Enviro} shows that both dispersion and correlation are higher in periods of high global policy uncertainty than in periods of low uncertainty. The higher correlation is consistent with turmoil leading to asset market price homogeneity. Since high dispersion means that the alpha opportunity (the ability to differentiate portfolios) is high, this suggests that the alpha opportunity in the local market has increased with global policy uncertainty. As only a small number of months fall into each environment, these results should be interpreted with caution.
 
+As the seminar also focused on oil price volatility, the same stratification is repeated using the monthly volatility of Brent crude oil, with the same percentile cut-offs.
+
+```{r PartC_Oil}
+# Monthly oil price volatility (SD of daily returns within each month, annualised)
+Oil_Vol <-
+  Commods %>%
+  filter(Ticker == "CO1 Comdty") %>%
+  Q1_Level_to_Returns() %>%
+  fmxdat::YM() %>% group_by(YM) %>%
+  summarise(Oil_Vol = sd(Returns) * sqrt(252))
+
+# Dispersion and correlation in high and low oil volatility months
+Oil_Tab <-
+  df_comp_plot %>%
+  left_join(Oil_Vol, by = "YM") %>%
+  filter(!is.na(Oil_Vol), !is.na(Disp)) %>%
+  rename(Value = Oil_Vol) %>%
+  Enviro_Split(Hi = 0.85, Lo = 0.25, Label = "oil volatility") %>%
+  group_by(Enviro) %>% summarise(Dispersion = mean(Disp), Correlation = mean(Cor, na.rm = T)) %>%
+  rename(Environment = Enviro)
+```
+```{r Figure_Enviro, fig.align = 'center', fig.cap = "Dispersion and correlation by level of global policy uncertainty and oil price volatility \\label{Figure_Enviro}", fig.height = 4, fig.width = 7, fig.ext = 'png'}
+g_env <-
+  bind_rows(Enviro_Tab %>% mutate(Factor = "Global policy uncertainty"),
+            Oil_Tab %>% mutate(Factor = "Oil price volatility")) %>%
+  # Keep only High, Low and Other as labels
+  mutate(Environment = gsub(" uncertainty| oil volatility", "", Environment)) %>%
+  mutate(Environment = factor(Environment, levels = c("Low", "Other", "High"))) %>%
+  gather(Measure, Value, Dispersion, Correlation) %>%
+  ggplot() +
+    geom_point(aes(Environment, Value, color = Measure), size = 3) +
+  geom_line(aes(Environment, Value, color = Measure, group = Measure)) +
+  facet_wrap(~Factor) +
+  labs(title = "Alpha Opportunity and Global Macro Conditions",
+       subtitle = "Average dispersion and correlation in low, other and high months", caption = "Dispersion is the weighted spread of returns around the index. Correlation is the average pairwise correlation.",
+       x = "", y = "") +
+  fmxdat::theme_fmx() + fmxdat::fmx_fills()
+
+fmxdat::finplot(g_env)
+```
+
+Figure \ref{Figure_Enviro} compares both macro factors. For both global policy uncertainty and oil price volatility, dispersion and correlation increase from low to high months, and the increase in correlation is larger for oil. The higher correlation is consistent with turmoil leading to asset market price homogeneity. Since high dispersion means that the alpha opportunity (the ability to differentiate portfolios) is high, this suggests that the alpha opportunity in the local market has increased with both global policy uncertainty and oil price volatility.
+
+
 ## Summary
 
 Overall, the results in Part C suggest that the alpha opportunity in the local market since 2020 has not been constant, but has risen in episodes. Dispersion between constituents rises sharply in certain periods, and these periods tend to coincide with high global policy uncertainty. Although stocks move together more closely during these periods, the larger spread in their returns suggests that active managers have had greater scope to differentiate their portfolios when global uncertainty is high.
