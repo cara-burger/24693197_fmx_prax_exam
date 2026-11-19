@@ -345,6 +345,22 @@ fmxdat::finplot(g_roll, y.pct = T, y.pct_acc = 1)
 
 Figure \ref{fig:rollrets} shows the rolling three year annualised return of each index. The small cap index has the widest range of rolling returns. It had the lowest rolling returns around 2020 and the highest from 2022 to 2024. The large cap index had the highest rolling returns for most of the period before 2022, where it surpassed by the small cap index. The mid cap index is at or below the Capped SWIX for most of the period. By the end of the sample, all four indices have similar rolling returns. Therefore, the index that performed best depends on the period in which an investor held it.
 
+```{r stats, results = 'asis'}
+Tab_stats <-
+  bind_rows(
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 3, NA_Check = 0.8),
+    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
+  ) %>%
+  # Same labels as the rest of the report
+  rename(LargeCaps = J200, MidCaps = J201, SmallCaps = J202, CappedSWIX = J433)
+
+print(xtable(Tab_stats, caption = "Risk and return statistics of the size indices relative to the Capped SWIX \\label{tab:stats}", digits = 3),
+      floating = TRUE, table.placement = 'H', comment = FALSE,
+      caption.placement = 'bottom', include.rownames = FALSE, size = "\\footnotesize")
+```
+
+Table \ref{tab:stats} reports a table of statistics for financial ratios over the last three and five years, relative to the Capped SWIX. As the Capped SWIX is the benchmark, its relative measures (such as tracking error and beta) are not meaningful. The small cap index has the highest annualised return and the lowest standard deviation over both periods. Therefore, it also has the highest adjusted Sharpe ratio and the smallest modified CVaR. Its beta is the lowest and its tracking error the highest. This suggests that it moves the least with the benchmark. Its beta in bull-market periods is also much lower than its beta in bear-market periods. Therefore, the small cap index follows the benchmark less when the market rises than when it falls. The large cap index has a beta above one and the lowest tracking error of the three size indexes. The mid cap index has the lowest return over both periods and a negative information ratio. This suggests that the small cap index offered the best return for its level of risk over both periods, and that the mid cap index offered the lowest return. Although it displayed signs of slightly higher market risk, the large cap index behaved most like the benchmark.
+
 # Active Share \label{AS}
 
 This section will look at how different each size index is from the benchmark.
@@ -377,22 +393,6 @@ fmxdat::finplot(g_as, y.pct = T, y.pct_acc = 1)
 ```
 
 Figure \ref{fig:as} shows the active share of each size index relative to the Capped SWIX. The large cap index has the lowest active share. This suggests that its stocks make up a large part of the Capped SWIX. The small cap index has an active share close to one through the whole sample period. The mid cap index lies between the two, but generally closer to the small cap index. The active share of the large cap index decreased in 2023 and has remained at this lower level since. The active share of the mid cap index slightly declined after 2020 and has increased again since 2025.  Therefore, the small cap index gives an investor the most different set of stocks from the benchmark, while the large cap index gives the least.
-
-```{r stats, results = 'asis'}
-Tab_stats <-
-  bind_rows(
-    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 3, NA_Check = 0.8),
-    Moments_Comp(Idx_Monthly %>% select(date, Tickers, Ret), BM = "J433", Yrs_LookBack = 5, NA_Check = 0.8)
-  ) %>%
-  # Same labels as the rest of the report
-  rename(LargeCaps = J200, MidCaps = J201, SmallCaps = J202, CappedSWIX = J433)
-
-print(xtable(Tab_stats, caption = "Risk and return statistics of the size indices relative to the Capped SWIX \\label{tab:stats}", digits = 3),
-      floating = TRUE, table.placement = 'H', comment = FALSE,
-      caption.placement = 'bottom', include.rownames = FALSE, size = "\\footnotesize")
-```
-
-Table \ref{tab:stats} reports a table of statistics for financial ratios over the last three and five years, relative to the Capped SWIX. As the Capped SWIX is the benchmark, its relative measures (such as tracking error and beta) are not meaningful. The small cap index has the highest annualised return and the lowest standard deviation over both periods. Therefore, it also has the highest adjusted Sharpe ratio and the smallest modified CVaR. Its beta is the lowest and its tracking error the highest. This suggests that it moves the least with the benchmark. Its beta in bull-market periods is also much lower than its beta in bear-market periods. Therefore, the small cap index follows the benchmark less when the market rises than when it falls. The large cap index has a beta above one and the lowest tracking error of the three size indexes. The mid cap index has the lowest return over both periods and a negative information ratio. This suggests that the small cap index offered the best return for its level of risk over both periods, and that the mid cap index offered the lowest return. Although it displayed signs of slightly higher market risk, the large cap index behaved most like the benchmark.
 
 # Conclusion \label{Conc}
 
